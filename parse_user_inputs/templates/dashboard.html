@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User-Inputs Dashboard V4 — {{ project_path }}</title>
+<style>{% include "dashboard.css" %}</style>
+</head>
+<body>
+
+<!-- ═══ Header ══════════════════════════════════════════════════════════════ -->
+<div class="header">
+  <h1>&#9876; User-Inputs Dashboard V4</h1>
+  <div class="meta">
+    Projekt: {{ project_path }} &middot; Erstellt: {{ today }} &middot;
+    Datenquellen: state.db (User + Assistant + Tool) + request_dumps + Git + Paste-PNGs
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══ Stats Cards ═══════════════════════════════════════════════════════ -->
+  <div class="stats-grid" id="stats"></div>
+
+  <!-- ═══ Platform Overview (Multi-Plattform Modus) ═══════════════════════ -->
+  {% if has_platforms %}
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128421;</span> Gefundene Plattformen</div>
+    <div class="stats-grid" id="platformStats"></div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ Memory Volume ═════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128200;</span> Memory-Volumen-Analyse</div>
+    <div class="chart-box">
+      <div class="mem-bar" id="memBar"></div>
+      <div id="memLegend" style="display:flex;gap:16px;margin-bottom:12px;"></div>
+      <div id="memDetail"></div>
+      <canvas id="memChart" height="200" style="margin-top:12px;"></canvas>
+    </div>
+  </div>
+
+  <!-- ═══ Charts Row ════════════════════════════════════════════════════════ -->
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="section-title"><span class="icon">&#128202;</span> User-Intentionen nach Kategorie</div>
+      <canvas id="catChart" height="300"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="section-title"><span class="icon">&#128197;</span> Aktivitat pro Tag</div>
+      <canvas id="activityChart" height="300"></canvas>
+    </div>
+  </div>
+
+  <!-- ═══ Tool Usage ════════════════════════════════════════════════════════ -->
+  <div class="section" style="margin-top:32px">
+    <div class="section-title"><span class="icon">&#128295;</span> Tool-Nutzungs-Statistik</div>
+    <div class="chart-row">
+      <div class="chart-box">
+        <div class="section-title" style="font-size:14px">Aufrufe pro Tool</div>
+        <canvas id="toolChart" height="300"></canvas>
+      </div>
+      <div class="chart-box">
+        <div class="section-title" style="font-size:14px">Daten pro Tool (KB)</div>
+        <canvas id="toolSizeChart" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Reasoning ═════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#129504;</span> Top Assistant-Reasoning-Snippets</div>
+    <div id="reasoningList"></div>
+  </div>
+
+  <!-- ═══ Timeline ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128197;</span> Commit-Timeline</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- ═══ Paste-PNGs ════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128444;</span> Visuelle User-Inputs (Paste-PNGs)</div>
+    <div class="paste-grid" id="pasteGrid"></div>
+  </div>
+
+  <!-- ═══ User Inputs ═══════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128172;</span> Alle echten User-Inputs</div>
+    <input class="inputs-search" id="searchInput" placeholder="&#128269; Suche in User-Inputs..." autocomplete="off">
+    <div class="filter-chips" id="filterChips"></div>
+    <div class="inputs-list" id="inputsList"></div>
+  </div>
+
+</div>
+
+<!-- ═══ Modal ═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal"><img id="modalImg" src="" alt="Full size"></div>
+
+<!-- ═══ Footer ══════════════════════════════════════════════════════════════ -->
+<div class="footer">
+  parse_user_inputs.py V4 &middot; Nur echte User-Inputs &middot; Assistant-Reasoning &middot; Tool-Outputs<br>
+  User-Inputs: {{ num_inputs }} &middot; Assistant-Snippets: {{ num_reasoning }} &middot;
+  Git-Commits: {{ num_commits }} &middot; Paste-PNGs: {{ num_paste }}<br>
+  Memory: {{ mem_mb }} MB (User: {{ user_mb }} MB, Assistant: {{ asst_mb }} MB, Tool: {{ tool_mb }} MB)
+</div>
+
+<!-- ═══ Data + JS ═══════════════════════════════════════════════════════════ -->
+<script>
+const USER_INPUTS  = {{ user_inputs_json }};
+const CAT_COUNTS   = {{ cat_counts_json }};
+const TIMELINE     = {{ timeline_json }};
+const PASTE_IMAGES = {{ paste_json }};
+const MEM_STATS    = {{ memory_stats_json }};
+const REASONING    = {{ reasoning_json }};
+const TOOL_DATA    = {{ tool_data_json }};
+const PLATFORM_COUNTS = {{ platform_counts_json }};
+</script>
+<script>{% include "dashboard.js" %}</script>
+
+</body>
+</html>

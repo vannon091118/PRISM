@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Threads Dashboard — {{ project_path }}</title>
+<style>{% include "dashboard.css" %}</style>
+<style>
+  /* ── Thread Cards ──────────────────────────────────────────────────────── */
+  .thread-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 16px; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .thread-card:hover { border-color: var(--accent); }
+  .thread-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .thread-header .title { font-weight: 600; font-size: 14px; color: var(--text); }
+  .thread-header .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .thread-header .platform-badge {
+    background: var(--bg3); border-radius: 8px; padding: 2px 8px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .thread-header .platform-badge.freebuff { color: var(--accent3); }
+  .thread-header .platform-badge.hermes { color: var(--accent); }
+  .thread-header .platform-badge.claude_code { color: var(--warn); }
+  .thread-header .platform-badge.codex { color: var(--accent2); }
+  .thread-header .date { color: var(--text2); font-size: 12px; }
+  .thread-header .msg-count { color: var(--text2); font-size: 11px; }
+
+  .thread-tags {
+    padding: 8px 20px; display: flex; gap: 4px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .thread-body { padding: 0; }
+  .thread-message {
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .thread-message:last-child { border-bottom: none; }
+  .thread-message .role-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 4px; font-weight: 600;
+  }
+  .thread-message .role-label.user { color: var(--accent); }
+  .thread-message .role-label.assistant { color: var(--accent3); }
+  .thread-message .role-label.tool { color: var(--warn); }
+  .thread-message .content {
+    color: var(--text2); font-size: 13px; white-space: pre-wrap;
+    word-break: break-word; max-height: 120px; overflow: hidden;
+    position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .thread-message .content.expanded { max-height: none; }
+  .thread-message .expand-btn {
+    color: var(--accent); font-size: 12px; cursor: pointer;
+    margin-top: 6px; user-select: none;
+  }
+  .thread-message.user-msg { background: rgba(88, 166, 255, 0.05); }
+  .thread-message.agent-msg { background: rgba(210, 168, 255, 0.05); }
+  .thread-message.tool-msg { background: rgba(240, 136, 62, 0.03); }
+  .thread-message.interrupt-msg {
+    background: rgba(248, 81, 73, 0.08);
+    border-left: 3px solid var(--err);
+  }
+  .thread-message.followup-msg {
+    background: rgba(63, 185, 80, 0.08);
+    border-left: 3px solid var(--accent2);
+  }
+  .thread-message.system-msg {
+    background: rgba(139, 148, 158, 0.08);
+    border-left: 3px solid var(--text2);
+    font-style: italic;
+  }
+  .thread-message .msg-badge {
+    display: inline-block; padding: 1px 6px; border-radius: 4px;
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px;
+    font-weight: 600; margin-left: 8px;
+  }
+  .msg-badge.interrupt { background: var(--err); color: white; }
+  .msg-badge.followup { background: var(--accent2); color: var(--bg); }
+  .msg-badge.system { background: var(--text2); color: var(--bg); }
+
+  .thread-footer {
+    padding: 8px 20px; background: var(--bg3);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .thread-footer .project { color: var(--text2); font-size: 11px; }
+  .thread-footer .thread-id { color: var(--text2); font-size: 10px; font-family: monospace; }
+
+  /* ── Category Group ────────────────────────────────────────────────────── */
+  .category-group { margin-bottom: 32px; }
+  .category-group-header {
+    font-size: 16px; font-weight: 600; margin-bottom: 12px;
+    padding: 8px 16px; background: var(--bg3); border-radius: var(--radius);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .category-group-header .count {
+    background: var(--accent); color: var(--bg); border-radius: 12px;
+    padding: 2px 10px; font-size: 12px; font-weight: 700;
+  }
+
+  /* ── Project Group ─────────────────────────────────────────────────────── */
+  .project-group { margin-bottom: 32px; }
+  .project-group-header {
+    font-size: 16px; font-weight: 600; margin-bottom: 12px;
+    padding: 8px 16px; background: var(--bg3); border-radius: var(--radius);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── View Toggle ───────────────────────────────────────────────────────── */
+  .view-toggle { display: flex; gap: 0; margin-bottom: 16px; }
+  .view-btn {
+    padding: 8px 16px; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text2); cursor: pointer; font-size: 13px; transition: all 0.2s;
+  }
+  .view-btn:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .view-btn:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+  .view-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#9876; Agent Threads Dashboard</h1>
+  <div class="meta">
+    Projekt: {{ project_path }} &middot; Erstellt: {{ today }} &middot;
+    {{ num_threads }} Threads &middot; {{ num_messages }} Messages &middot;
+    {{ num_platforms }} Plattformen
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats-grid" id="stats"></div>
+
+  <!-- Platform Overview -->
+  {% if has_platforms %}
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128421;</span> Plattformen</div>
+    <div class="stats-grid" id="platformStats"></div>
+  </div>
+  {% endif %}
+
+  <!-- View Toggle -->
+  <div class="section">
+    <div class="view-toggle">
+      <button class="view-btn active" onclick="setView('category')">Nach Kategorie</button>
+      <button class="view-btn" onclick="setView('project')">Nach Projekt</button>
+      <button class="view-btn" onclick="setView('all')">Alle Threads</button>
+    </div>
+
+    <!-- Search -->
+    <input class="inputs-search" id="searchInput" placeholder="&#128269; Suche in Threads..." autocomplete="off">
+
+    <!-- Filter Chips -->
+    <div class="filter-chips" id="filterChips"></div>
+
+    <!-- Thread List -->
+    <div id="threadList"></div>
+  </div>
+
+</div>
+
+<script>
+const THREADS = {{ threads_json }};
+const CAT_COUNTS = {{ cat_counts_json }};
+const PROJECT_COUNTS = {{ project_counts_json }};
+const PLATFORM_COUNTS = {{ platform_counts_json }};
+const NUM_MESSAGES = {{ num_messages }};
+const NUM_PLATFORMS = {{ num_platforms }};
+</script>
+<script>{% include "threads.js" %}</script>
+
+</body>
+</html>

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Canvas Dashboard — {{ project_path }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090b; --bg2: #18181b; --bg3: #27272a;
+  --border: #3f3f46; --text: #fafafa; --text2: #a1a1aa; --text3: #71717a;
+  --accent: #3b82f6; --accent2: #10b981; --accent3: #8b5cf6;
+  --warn: #f59e0b; --err: #ef4444;
+  --complete: #10b981; --partial: #f59e0b; --incomplete: #ef4444;
+  --committed: #10b981; --pending: #71717a;
+  --radius: 10px; --radius-sm: 6px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.5;
+  height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.header {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.header h1 {
+  font-size: 15px; font-weight: 600; letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.header h1 .icon { font-size: 18px; }
+.header .meta { color: var(--text3); font-size: 11px; font-weight: 400; }
+.header .stats { display: flex; gap: 4px; }
+.header .stat {
+  text-align: center; padding: 4px 12px;
+  border-radius: var(--radius-sm); background: var(--bg3);
+  min-width: 72px;
+}
+.header .stat .val { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.header .stat .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); font-weight: 500; }
+.header .stat.green .val { color: var(--complete); }
+.header .stat.red .val { color: var(--incomplete); }
+.header .stat.amber .val { color: var(--warn); }
+.header .stat.purple .val { color: var(--accent3); }
+.header .stat.blue .val { color: var(--accent); }
+
+/* ── Main Layout ───────────────────────────────────────────────────────── */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Canvas Area ───────────────────────────────────────────────────────── */
+.canvas-area {
+  flex: 1; position: relative; overflow: hidden;
+  background: var(--bg);
+}
+#particleCanvas { width: 100%; height: 100%; display: block; }
+.canvas-overlay {
+  position: absolute; bottom: 12px; left: 12px; right: 12px;
+  display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none;
+}
+.canvas-legend {
+  background: rgba(9,9,11,0.92); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 6px 10px; font-size: 10px;
+  display: flex; gap: 10px; align-items: center; pointer-events: auto;
+  backdrop-filter: blur(8px);
+}
+.canvas-legend .dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* ── Side Panel ────────────────────────────────────────────────────────── */
+.side-panel {
+  width: 420px; background: var(--bg2); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.tab-bar {
+  display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  padding: 0 4px;
+}
+.tab-btn {
+  flex: 1; padding: 10px 6px; background: transparent; border: none;
+  color: var(--text3); font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+  font-family: inherit; border-bottom: 2px solid transparent;
+  letter-spacing: -0.01em;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+.tab-content {
+  flex: 1; overflow-y: auto; padding: 16px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.tab-content::-webkit-scrollbar { width: 4px; }
+.tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── Section Headers ──────────────────────────────────────────────────── */
+.section-title {
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Overview Tab ──────────────────────────────────────────────────────── */
+.overview-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px;
+}
+.ov-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px; text-align: center;
+}
+.ov-card .val { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ov-card .lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; margin-top: 2px; font-weight: 500; }
+
+/* ── Integrity Bar ─────────────────────────────────────────────────────── */
+.integrity-bar {
+  height: 6px; border-radius: 3px; overflow: hidden;
+  display: flex; margin-bottom: 16px; background: var(--bg3);
+}
+.integrity-bar .seg {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 600; transition: width 0.5s;
+}
+
+/* ── Project Cards ─────────────────────────────────────────────────────── */
+.proj-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px; margin-bottom: 6px;
+  cursor: pointer; transition: all 0.15s;
+}
+.proj-card:hover { border-color: var(--accent); background: rgba(59,130,246,0.05); }
+.proj-card .proj-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.proj-card .proj-name { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+.proj-card .proj-pct { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.proj-card .proj-bar {
+  height: 3px; border-radius: 2px; background: var(--bg);
+  overflow: hidden; margin-bottom: 8px;
+}
+.proj-card .proj-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+.proj-card .proj-meta {
+  display: flex; gap: 6px; font-size: 10px; color: var(--text3);
+  flex-wrap: wrap;
+}
+.proj-card .proj-tag {
+  background: var(--bg); border-radius: 3px; padding: 1px 5px;
+  border: 1px solid var(--border);
+}
+
+/* ── Timeline Tab ──────────────────────────────────────────────────────── */
+.timeline-entry {
+  display: flex; gap: 10px; padding: 6px 0;
+  border-bottom: 1px solid rgba(63,63,70,0.5);
+}
+.timeline-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+}
+.timeline-info { flex: 1; }
+.timeline-title { font-size: 12px; font-weight: 500; line-height: 1.3; }
+.timeline-meta { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.timeline-status {
+  font-size: 9px; padding: 2px 6px; border-radius: 3px;
+  text-transform: uppercase; font-weight: 600; flex-shrink: 0; margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+
+/* ── Integrity Tab ─────────────────────────────────────────────────────── */
+.issue-card {
+  background: var(--bg3); border-left: 3px solid var(--err);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 12px; margin-bottom: 6px;
+}
+.issue-card.warning { border-left-color: var(--warn); }
+.issue-card .issue-title { font-size: 12px; font-weight: 500; line-height: 1.3; }
+.issue-card .issue-meta { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+/* ── Category Chips ────────────────────────────────────────────────────── */
+.cat-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; }
+.cat-chip {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 4px; padding: 3px 8px; font-size: 10px;
+  color: var(--text3); cursor: pointer; transition: all 0.15s;
+  font-weight: 500;
+}
+.cat-chip:hover, .cat-chip.active {
+  border-color: var(--accent); color: var(--accent);
+}
+.cat-chip .cnt { font-weight: 700; color: var(--text2); }
+
+/* ── Flow Visualization ────────────────────────────────────────────────── */
+.flow-row {
+  display: flex; align-items: center; gap: 4px; margin-bottom: 4px;
+  font-size: 11px;
+}
+.flow-node {
+  padding: 3px 8px; border-radius: var(--radius-sm); font-weight: 500;
+  white-space: nowrap;
+}
+.flow-arrow { color: var(--text3); }
+
+/* ── Canvas Tooltip ────────────────────────────────────────────────────── */
+#tooltip {
+  display: none; position: fixed; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 14px; font-size: 11px; pointer-events: none;
+  z-index: 100; max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); backdrop-filter: blur(12px);
+}
+#tooltip .tt-title { font-weight: 600; margin-bottom: 6px; font-size: 12px; }
+#tooltip .tt-row { display: flex; justify-content: space-between; color: var(--text3); padding: 1px 0; }
+
+/* ── Breadcrumb / Drill-Down ───────────────────────────────────────────── */
+.breadcrumb {
+  position: absolute; top: 12px; left: 12px; z-index: 50;
+  display: flex; gap: 4px; align-items: center;
+}
+.breadcrumb-item {
+  background: rgba(9,9,11,0.9); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 5px 10px; font-size: 11px;
+  color: var(--text3); cursor: pointer; transition: all 0.15s;
+  font-weight: 500; backdrop-filter: blur(8px);
+}
+.breadcrumb-item:hover { border-color: var(--accent); color: var(--accent); }
+.breadcrumb-item.current { color: var(--accent); border-color: var(--accent); }
+.breadcrumb-sep { color: var(--text3); font-size: 10px; }
+.back-btn {
+  position: absolute; top: 12px; left: 12px; z-index: 50;
+  background: rgba(9,9,11,0.9); border: 1px solid var(--accent);
+  border-radius: var(--radius-sm); padding: 5px 12px; font-size: 11px;
+  color: var(--accent); cursor: pointer; transition: all 0.15s;
+  font-family: inherit; display: none; font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+.back-btn:hover { background: var(--accent); color: var(--bg); }
+.back-btn.visible { display: block; }
+
+/* ── Commit Badge ──────────────────────────────────────────────────────── */
+.commit-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9px; padding: 1px 6px; border-radius: 3px;
+  font-weight: 600; letter-spacing: 0.3px;
+  background: rgba(16,185,129,0.1); color: var(--committed);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+.commit-hash {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--committed); opacity: 0.8;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="icon">&#x25C8;</span> PRISM</h1>
+    <div class="meta">{{ project_path }} &middot; {{ today }}</div>
+  </div>
+  <div class="stats">
+    <div class="stat blue"><div class="val">{{ num_threads }}</div><div class="lbl">Threads</div></div>
+    <div class="stat green"><div class="val">{{ num_with_agent }}</div><div class="lbl">Beantwortet</div></div>
+    <div class="stat red"><div class="val">{{ num_no_response }}</div><div class="lbl">Offen</div></div>
+    <div class="stat amber"><div class="val">{{ num_interrupts }}</div><div class="lbl">Interrupts</div></div>
+    <div class="stat purple"><div class="val">{{ completion_pct }}%</div><div class="lbl">Rate</div></div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Canvas Area -->
+  <div class="canvas-area">
+    <canvas id="particleCanvas"></canvas>
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="canvas-overlay">
+      <div class="canvas-legend">
+        <div class="dot" style="background:var(--complete)"></div> Vollstaendig
+        <div class="dot" style="background:var(--partial)"></div> Teilweise
+        <div class="dot" style="background:var(--incomplete)"></div> Unvollstaendig
+        <div class="dot" style="background:var(--accent)"></div> Plattform
+      </div>
+    </div>
+    <div id="tooltip"></div>
+  </div>
+
+  <!-- Side Panel -->
+  <div class="side-panel">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('overview')">Uebersicht</button>
+      <button class="tab-btn" onclick="switchTab('projects')">Projekte</button>
+      <button class="tab-btn" onclick="switchTab('timeline')">Zeitstrahl</button>
+      <button class="tab-btn" onclick="switchTab('integrity')">Integritaet</button>
+      <button class="tab-btn" onclick="switchTab('flow')">Flow</button>
+    </div>
+    <div class="tab-content">
+      <!-- Overview -->
+      <div class="tab-pane active" id="tab-overview">
+        <div class="overview-grid">
+          <div class="ov-card"><div class="val" style="color:var(--accent)">{{ num_threads }}</div><div class="lbl">Gesamt Threads</div></div>
+          <div class="ov-card"><div class="val" style="color:var(--accent2)">{{ num_with_agent }}</div><div class="lbl">Vollstaendig</div></div>
+          <div class="ov-card"><div class="val" style="color:var(--err)">{{ num_no_response }}</div><div class="lbl">Ohne Agent</div></div>
+          <div class="ov-card"><div class="val" style="color:var(--warn)">{{ num_interrupts }}</div><div class="lbl">Interrupts</div></div>
+          <div class="ov-card"><div class="val" style="color:var(--accent3)">{{ num_projects }}</div><div class="lbl">Projekte</div></div>
+          <div class="ov-card"><div class="val" style="color:var(--accent)">{{ num_platforms }}</div><div class="lbl">Plattformen</div></div>
+        </div>
+        <div style="margin-bottom:12px;font-size:11px;font-weight:600;">Integritaet</div>
+        <div class="integrity-bar" id="integrityBar"></div>
+        <div style="margin-bottom:12px;font-size:11px;font-weight:600;">Plattformen</div>
+        <div id="platformList"></div>
+        <div style="margin-top:12px;margin-bottom:8px;font-size:11px;font-weight:600;">Kategorien</div>
+        <div class="cat-chips" id="catChips"></div>
+      </div>
+
+      <!-- Projects -->
+      <div class="tab-pane" id="tab-projects">
+        <div id="projectList"></div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="tab-pane" id="tab-timeline">
+        <div id="timelineList"></div>
+      </div>
+
+      <!-- Integrity -->
+      <div class="tab-pane" id="tab-integrity">
+        <div style="margin-bottom:12px;font-size:11px;font-weight:600;color:var(--err)">
+          {{ num_no_response }} Threads ohne Agent-Antwort
+        </div>
+        <div id="integrityIssues"></div>
+      </div>
+
+      <!-- Flow -->
+      <div class="tab-pane" id="tab-flow">
+        <div style="margin-bottom:12px;font-size:11px;font-weight:600;">
+          Input &rarr; Agent &rarr; Output Sequenzen
+        </div>
+        <div id="flowList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Data ───────────────────────────────────────────────────────────────
+const THREADS = {{ threads_json }};
+const PROJECTS = {{ projects_json }};
+const CATEGORIES = {{ categories_json }};
+const PLATFORM_COUNTS = {{ platform_counts_json }};
+const TIMELINE = {{ timeline_json }};
+const INTEGRITY = {{ integrity_json }};
+const CANVAS_NODES = {{ canvas_nodes_json }};
+const NUM_THREADS = {{ num_threads }};
+const NUM_WITH_AGENT = {{ num_with_agent }};
+const NUM_NO_RESPONSE = {{ num_no_response }};
+const NUM_INTERRUPTS = {{ num_interrupts }};
+const COMPLETION_PCT = {{ completion_pct }};
+
+// ── Tab Switching ──────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── Overview: Integrity Bar ────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('integrityBar');
+  const complete = NUM_WITH_AGENT;
+  const interrupted = NUM_INTERRUPTS;
+  const noResp = NUM_NO_RESPONSE;
+  const total = NUM_THREADS;
+  el.innerHTML =
+    '<div class="seg" style="width:' + (complete/total*100) + '%;background:var(--complete);color:#000">' + complete + '</div>' +
+    '<div class="seg" style="width:' + (interrupted/total*100) + '%;background:var(--warn);color:#000">' + interrupted + '</div>' +
+    '<div class="seg" style="width:' + (noResp/total*100) + '%;background:var(--err);color:#fff">' + noResp + '</div>';
+})();
+
+// ── Overview: Platform List ────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('platformList');
+  const colors = { freebuff: '#a78bfa', hermes: '#38bdf8', claude_code: '#f59e0b', codex: '#22c55e', cursor: '#94a3b8', gemini_cli: '#60a5fa' };
+  const names = { freebuff: 'Freebuff', hermes: 'Hermes', claude_code: 'Claude Code', codex: 'Codex', cursor: 'Cursor', gemini_cli: 'Gemini CLI' };
+  Object.entries(PLATFORM_COUNTS).sort((a,b) => b[1] - a[1]).forEach(([pid, count]) => {
+    el.innerHTML += '<div class="flow-row"><span class="flow-node" style="background:' + (colors[pid]||'#666') + '20;color:' + (colors[pid]||'#666') + '">' + (names[pid]||pid) + '</span><span style="color:var(--text2)">' + count + ' Threads</span></div>';
+  });
+})();
+
+// ── Overview: Category Chips ───────────────────────────────────────────
+(function() {
+  const el = document.getElementById('catChips');
+  Object.entries(CATEGORIES).sort((a,b) => b[1] - a[1]).forEach(([cat, count]) => {
+    el.innerHTML += '<span class="cat-chip"><span class="cnt">' + count + '</span> ' + cat + '</span>';
+  });
+})();
+
+// ── Projects Tab ───────────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('projectList');
+  PROJECTS.forEach(p => {
+    const statusColor = p.status === 'complete' ? 'var(--complete)' : p.status === 'partial' ? 'var(--partial)' : 'var(--incomplete)';
+    const tags = p.categories.slice(0, 4).map(c => '<span class="proj-tag">' + c + '</span>').join('');
+    el.innerHTML += '<div class="proj-card" onclick="showProjectDetail(\'' + p.name.replace(/'/g, "\\'") + '\')">' +
+      '<div class="proj-head"><span class="proj-name">' + p.name + '</span><span class="proj-pct" style="color:' + statusColor + '">' + p.percent + '%</span></div>' +
+      '<div class="proj-bar"><div class="proj-bar-fill" style="width:' + p.percent + '%;background:' + statusColor + '"></div></div>' +
+      '<div class="proj-meta"><span>' + p.total + ' threads</span><span>' + p.complete + '/' + p.incomplete + '</span><span>' + p.platforms.join(', ') + '</span></div>' +
+      '<div style="margin-top:4px;display:flex;gap:3px;flex-wrap:wrap">' + tags + '</div></div>';
+  });
+})();
+
+// ── Timeline Tab ───────────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('timelineList');
+  const sorted = TIMELINE.slice().sort((a,b) => b.date.localeCompare(a.date)).slice(0, 100);
+  const colors = { freebuff: '#a78bfa', hermes: '#38bdf8', claude_code: '#f59e0b', codex: '#22c55e', cursor: '#94a3b8', gemini_cli: '#60a5fa' };
+  sorted.forEach(t => {
+    const dotColor = t.has_agent ? 'var(--complete)' : t.has_interrupt ? 'var(--warn)' : 'var(--err)';
+    const statusText = t.has_agent ? 'OK' : t.has_interrupt ? 'INT' : '??';
+    const statusBg = t.has_agent ? 'var(--complete)' : t.has_interrupt ? 'var(--warn)' : 'var(--err)';
+    el.innerHTML += '<div class="timeline-entry">' +
+      '<div class="timeline-dot" style="background:' + dotColor + '"></div>' +
+      '<div class="timeline-info">' +
+        '<div class="timeline-title">' + t.title.substring(0, 60) + '</div>' +
+        '<div class="timeline-meta">' + t.date + ' &middot; ' + (colors[t.platform] ? '<span style="color:' + colors[t.platform] + '">' + t.platform + '</span>' : t.platform) + ' &middot; ' + t.project + '</div>' +
+      '</div>' +
+      '<div class="timeline-status" style="background:' + statusBg + ';color:#000">' + statusText + '</div>' +
+    '</div>';
+  });
+})();
+
+// ── Integrity Tab ──────────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('integrityIssues');
+  INTEGRITY.forEach(issue => {
+    const isInterrupt = issue.type === 'interrupt';
+    el.innerHTML += '<div class="issue-card' + (isInterrupt ? ' warning' : '') + '">' +
+      '<div class="issue-type" style="color:' + (isInterrupt ? 'var(--warn)' : 'var(--err)') + '">' + (isInterrupt ? 'Interrupt' : 'Keine Antwort') + '</div>' +
+      '<div class="issue-title">' + issue.title.substring(0, 70) + '</div>' +
+      '<div class="issue-meta">' + issue.platform + ' &middot; ' + issue.project + ' &middot; ' + issue.date + '</div>' +
+      (issue.user_input ? '<div style="margin-top:4px;font-size:9px;color:var(--text2);max-height:40px;overflow:hidden">' + issue.user_input.substring(0, 150) + '</div>' : '') +
+    '</div>';
+  });
+})();
+
+// ── Flow Tab ───────────────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('flowList');
+  // Zeige die ersten 50 Threads als Flow
+  THREADS.slice(0, 50).forEach(t => {
+    const userShort = t.user_input.substring(0, 40).replace(/</g, '&lt;');
+    const agentShort = t.agent_reaction ? t.agent_reaction.substring(0, 40).replace(/</g, '&lt;') : '...';
+    const resultShort = t.result_summary ? t.result_summary.substring(0, 40).replace(/</g, '&lt;') : '...';
+    const statusColor = t.has_agent_response ? 'var(--complete)' : t.has_interrupts ? 'var(--warn)' : 'var(--err)';
+    el.innerHTML += '<div class="flow-row" style="flex-direction:column;align-items:stretch;gap:2px;padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">' +
+      '<div style="font-size:9px;color:var(--text2)">' + t.platform + ' &middot; ' + t.project + ' &middot; ' + t.date + '</div>' +
+      '<div style="display:flex;gap:4px;align-items:center">' +
+        '<span class="flow-node" style="background:var(--accent)20;color:var(--accent);font-size:9px">' + userShort + '</span>' +
+        '<span class="flow-arrow">&rarr;</span>' +
+        '<span class="flow-node" style="background:var(--accent3)20;color:var(--accent3);font-size:9px">' + agentShort + '</span>' +
+        '<span class="flow-arrow">&rarr;</span>' +
+        '<span class="flow-node" style="background:' + statusColor + '20;color:' + statusColor + ';font-size:9px">' + (t.has_agent_response ? 'DONE' : t.has_interrupts ? 'INT' : 'OPEN') + '</span>' +
+      '</div>' +
+      '<div style="display:flex;gap:3px;flex-wrap:wrap">' +
+        t.categories.map(c => '<span style="font-size:8px;background:var(--bg);border-radius:3px;padding:0 4px;color:var(--text2)">' + c + '</span>').join('') +
+      '</div>' +
+    '</div>';
+  });
+})();
+
+function showProjectDetail(name) {
+  // Scroll to project in timeline or show filtered view
+  switchTab('timeline');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn')[2].classList.add('active');
+}
+
+// ── Canvas Particle System mit Drill-Down ──────────────────────────────
+(function() {
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  const tooltip = document.getElementById('tooltip');
+  const breadcrumbEl = document.getElementById('breadcrumb');
+  let W, H, particles = [], hoveredNode = null;
+  let mouseX = 0, mouseY = 0;
+  const colors = {
+    complete: '#22c55e', partial: '#f59e0b', incomplete: '#ef4444',
+    bg: '#0a0e17', line: '#334155', accent: '#38bdf8'
+  };
+
+  // ── Navigation Stack ────────────────────────────────────────────────
+  let navStack = [{ level: 'overview', label: 'Alle Projekte', data: null }];
+  let zoomAnim = { active: false, progress: 0, fromX: 0, fromY: 0, toX: W/2, toY: H/2 };
+
+  const CAT_COLORS = {
+    'BUG': '#ef4444', 'DOKU': '#38bdf8', 'QA_TEST': '#a78bfa',
+    'MCP_ADDON': '#f59e0b', 'GAMEPLAY': '#22c55e', 'FEATURE': '#06b6d4',
+    'COST': '#f97316', 'SUCHSYSTEM': '#8b5cf6', 'SERVER_START': '#14b8a6',
+    'REMOTE_CONTROL': '#ec4899', 'HEADLESS_VERBOT': '#6366f1',
+    'ENTKOPPELUNG': '#84cc16', 'REFACTOR': '#64748b', 'GIT': '#e11d48',
+    'ARCHITEKTUR': '#0ea5e9', 'PERFORMANCE': '#d946ef', 'CONFIG': '#78716c',
+    'UNCATEGORIZED': '#334155',
+  };
+  function getCatColor(cat) { return CAT_COLORS[cat] || '#475569'; }
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    W = canvas.width = rect.width * devicePixelRatio;
+    H = canvas.height = rect.height * devicePixelRatio;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    W = rect.width; H = rect.height;
+  }
+
+  // ── Breadcrumb Rendering ────────────────────────────────────────────
+  function renderBreadcrumb() {
+    let html = '';
+    navStack.forEach(function(item, i) {
+      if (i > 0) html += '<span class="breadcrumb-sep">/</span>';
+      const cls = i === navStack.length - 1 ? 'breadcrumb-item current' : 'breadcrumb-item';
+      html += '<span class="' + cls + '" onclick="drillUpTo(' + i + ')">' + item.label + '</span>';
+    });
+    breadcrumbEl.innerHTML = html;
+  }
+
+  // ── Zoom into Project ───────────────────────────────────────────────
+  window.zoomIntoProject = function(node) {
+    var projectName = node.label;
+    var projectThreads = THREADS.filter(function(t) { return t.project === projectName; });
+    if (projectThreads.length === 0) return;
+
+    navStack.push({ level: 'project', label: projectName, data: { threads: projectThreads, node: node } });
+    renderBreadcrumb();
+
+    // Threads als Sub-Bubbles erzeugen
+    buildThreadParticles(projectThreads, node);
+
+    // Side-Panel zeigt Projekt-Detail
+    showBubbleDetail(node);
+  };
+
+  // ── Zoom into Thread ────────────────────────────────────────────────
+  window.zoomIntoThread = function(node) {
+    var threadData = node.threadData;
+    if (!threadData || !threadData.messages || threadData.messages.length === 0) return;
+
+    navStack.push({ level: 'thread', label: threadData.title.substring(0, 40), data: { thread: threadData, node: node } });
+    renderBreadcrumb();
+
+    buildMessageParticles(threadData, node);
+
+    // Side-Panel zeigt Thread-Detail mit allen Messages
+    showBubbleDetail(node);
+  };
+
+  // ── Drill-Up ────────────────────────────────────────────────────────
+  window.drillUpTo = function(index) {
+    navStack = navStack.slice(0, index + 1);
+    renderBreadcrumb();
+    var current = navStack[navStack.length - 1];
+    if (current.level === 'overview') {
+      initParticles();
+    } else if (current.level === 'project') {
+      buildThreadParticles(current.data.threads, current.data.node);
+    }
+  };
+
+  // ── Build Thread-Level Particles ────────────────────────────────────
+  function buildThreadParticles(threads, parentNode) {
+    particles.length = 0;
+    var cx = W / 2, cy = H / 2;
+    var radius = Math.min(W, H) * 0.42;
+    var threadCount = threads.length;
+
+    // Sortiere nach Datum fuer zeitliche Platzierung
+    threads.sort(function(a, b) { return (a.date || '').localeCompare(b.date || ''); });
+
+    threads.forEach(function(t, i) {
+      // Zeitbasiert: links=aeltser, rechts=neuester
+      var timeRatio = i / Math.max(threadCount - 1, 1);
+      var x = W * 0.08 + timeRatio * W * 0.84;
+      // Y = spiralartig fuer bessere Platzierung
+      var spiralAngle = (i / threadCount) * Math.PI * 6;
+      var spiralR = (i / threadCount) * radius * 0.5;
+      var y = cy + Math.sin(spiralAngle) * spiralR * 0.4 + (Math.random() - 0.5) * 20;
+      var maxMsg = Math.max.apply(null, threads.map(function(t2) { return t2.message_count || 1; }));
+      var size = 4 + Math.min(t.message_count / Math.max(maxMsg, 1), 1) * 10;
+      var statusColor = t.has_agent_response ? colors.complete : t.has_interrupts ? colors.partial : colors.incomplete;
+
+      // Pie-Segmente fuer Thread-Kategorien
+      var catDist = {};
+      t.categories.forEach(function(c) { catDist[c] = (catDist[c] || 0) + 1; });
+      var totalCat = t.categories.length || 1;
+      var pie = [];
+      var startAngle = 0;
+      Object.keys(catDist).sort(function(a,b) { return catDist[b] - catDist[a]; }).forEach(function(cat) {
+        var sweep = (catDist[cat] / totalCat) * Math.PI * 2;
+        pie.push({ category: cat, start: startAngle, end: startAngle + sweep, percent: Math.round(catDist[cat] / totalCat * 100) });
+        startAngle += sweep;
+      });
+
+      particles.push({
+        x: x, y: y, vx: 0, vy: 0, size: size,
+        color: statusColor, label: t.title.substring(0, 50),
+        total: t.message_count, completeness: t.has_agent_response ? 100 : 0,
+        status: t.has_agent_response ? 'complete' : t.has_interrupts ? 'partial' : 'incomplete',
+        type: 'thread', baseX: x, baseY: y,
+        pie: pie, threadData: t,
+        user_msgs: t.user_message_count, agent_msgs: t.message_count - t.user_message_count,
+      });
+    });
+
+    // Background particles — weniger wenn viele Threads
+    var bgCount = threadCount > 50 ? 20 : 40;
+    for (var i = 0; i < bgCount; i++) {
+      particles.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        size: 1 + Math.random() * 1.5, color: '#1e293b', type: 'bg', alpha: 0.2 + Math.random() * 0.3,
+      });
+    }
+  }
+
+  // ── Build Message-Level Particles ───────────────────────────────────
+  function buildMessageParticles(thread, parentNode) {
+    particles.length = 0; // Array leeren statt neu erstellen
+    var cx = W / 2, cy = H / 2;
+    var radius = Math.min(W, H) * 0.35;
+    var msgs = thread.messages;
+
+    msgs.forEach(function(m, i) {
+      var angle = (i / msgs.length) * Math.PI * 2 - Math.PI / 2;
+      var r = radius * (0.2 + (i / msgs.length) * 0.7);
+      var x = cx + Math.cos(angle) * r;
+      var y = cy + Math.sin(angle) * r;
+      var roleColor = m.role === 'user' ? '#38bdf8' : m.role === 'assistant' ? '#a78bfa' : '#f59e0b';
+      var size = 3 + Math.min(m.content.length / 200, 8);
+      var msgType = m.message_type || 'normal';
+      if (msgType === 'interrupt') roleColor = '#ef4444';
+      if (msgType === 'system') roleColor = '#64748b';
+
+      particles.push({
+        x: x, y: y, vx: 0, vy: 0, size: size,
+        color: roleColor, label: m.role.toUpperCase() + ': ' + m.content.substring(0, 60),
+        total: 1, completeness: 100, status: 'message',
+        type: 'message', baseX: x, baseY: y,
+        pie: [], msgData: m,
+        user_msgs: m.role === 'user' ? 1 : 0, agent_msgs: m.role === 'assistant' ? 1 : 0,
+      });
+    });
+
+    for (var i = 0; i < 30; i++) {
+      particles.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        size: 1 + Math.random(), color: '#1e293b', type: 'bg', alpha: 0.15 + Math.random() * 0.2,
+      });
+    }
+  }
+
+  // ── Create Overview Particles ───────────────────────────────────────
+  function initParticles() {
+    particles.length = 0; // Array leeren statt neu erstellen
+    CANVAS_NODES.forEach(function(n) {
+      particles.push({
+        x: n.x * W, y: n.y * H,
+        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        size: n.size, color: colors[n.status] || colors.incomplete,
+        label: n.id, total: n.total, completeness: n.completeness,
+        status: n.status, type: 'project', baseX: n.x * W, baseY: n.y * H,
+        pie: n.pie || [], user_msgs: n.user_msgs || 0,
+        agent_msgs: n.agent_msgs || 0, platforms: n.platforms || [],
+      });
+    });
+    for (var i = 0; i < 80; i++) {
+      particles.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+        size: 1 + Math.random() * 2, color: '#1e293b', type: 'bg', alpha: 0.3 + Math.random() * 0.5,
+      });
+    }
+  }
+
+  // ── Draw Node ───────────────────────────────────────────────────────
+  function drawNode(p) {
+    var isHovered = hoveredNode === p;
+    var pulse = isHovered ? Math.sin(Date.now() / 200) * 3 : 0;
+    var r = p.size + pulse;
+
+    // Glow
+    var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 2.5);
+    grad.addColorStop(0, p.color + '25');
+    grad.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r * 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Pie-Segmente oder einfacher Kreis
+    if (p.pie && p.pie.length > 0 && r > 6) {
+      p.pie.forEach(function(seg) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.arc(p.x, p.y, r, seg.start - Math.PI / 2, seg.end - Math.PI / 2);
+        ctx.closePath();
+        ctx.fillStyle = getCatColor(seg.category);
+        ctx.globalAlpha = isHovered ? 0.95 : 0.7;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + r * Math.cos(seg.start - Math.PI / 2), p.y + r * Math.sin(seg.start - Math.PI / 2));
+        ctx.strokeStyle = 'rgba(10,14,23,0.5)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+      // Donut-Inner
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r * 0.3, 0, Math.PI * 2);
+      ctx.fillStyle = '#111827';
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    }
+
+    // Completeness-Ring
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r + 2, -Math.PI / 2, -Math.PI / 2 + (p.completeness / 100) * Math.PI * 2);
+    ctx.strokeStyle = p.completeness > 80 ? '#22c55e' : p.completeness > 50 ? '#f59e0b' : '#ef4444';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Label — nur bei Hover oder wenn wenige Nodes
+    if (isHovered) {
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 10px SF Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label.substring(0, 50), p.x, p.y - r - 8);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '9px SF Mono, monospace';
+      ctx.fillText(p.total + (p.type === 'message' ? '' : ' msgs'), p.x, p.y - r + 2);
+    } else if (p.type === 'project' || (p.type === 'thread' && r > 10)) {
+      ctx.fillStyle = 'rgba(148,163,184,0.7)';
+      ctx.font = '8px SF Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label.substring(0, 25), p.x, p.y - r - 4);
+    }
+  }
+
+  // ── Animation Loop ──────────────────────────────────────────────────
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    var bgGrad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W * 0.6);
+    bgGrad.addColorStop(0, '#111827'); bgGrad.addColorStop(1, '#0a0e17');
+    ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
+
+    // Grid
+    ctx.strokeStyle = 'rgba(51,65,85,0.08)'; ctx.lineWidth = 0.5;
+    for (var x = 0; x < W; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (var y = 0; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+    // Update
+    particles.forEach(function(p) {
+      if (p.type === 'bg') {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+      } else {
+        p.x = p.baseX + Math.sin(Date.now() / 3000 + p.baseX) * 3;
+        p.y = p.baseY + Math.cos(Date.now() / 4000 + p.baseY) * 3;
+      }
+    });
+
+    // Draw bg
+    particles.filter(function(p) { return p.type === 'bg'; }).forEach(function(p) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill(); ctx.globalAlpha = 1;
+    });
+
+    // Draw dependency lines
+    var projectNodes = particles.filter(function(p) { return p.type === 'project'; });
+    projectNodes.forEach(function(p) {
+      if (!p.depends_on) return;
+      p.depends_on.forEach(function(dep) {
+        var target = projectNodes.find(function(n) { return n.label === dep.project; });
+        if (!target) return;
+        var strength = Math.min(dep.strength / 5, 1);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.strokeStyle = 'rgba(56,189,248,' + (0.1 + strength * 0.25) + ')';
+        ctx.lineWidth = 0.5 + strength * 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+    });
+
+    // Draw nodes
+    particles.filter(function(p) { return p.type !== 'bg'; }).forEach(drawNode);
+
+    // Scan line
+    var scanY = (Date.now() / 30) % H;
+    ctx.beginPath(); ctx.moveTo(0, scanY); ctx.lineTo(W, scanY);
+    ctx.strokeStyle = 'rgba(56,189,248,0.06)'; ctx.lineWidth = 1; ctx.stroke();
+
+    requestAnimationFrame(animate);
+  }
+
+  // ── Mouse Interaction ───────────────────────────────────────────────
+  canvas.addEventListener('mousemove', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top;
+    hoveredNode = null;
+    particles.filter(function(p) { return p.type !== 'bg'; }).forEach(function(p) {
+      var dx = mouseX - p.x, dy = mouseY - p.y;
+      if (Math.sqrt(dx * dx + dy * dy) < p.size + 10) hoveredNode = p;
+    });
+    if (hoveredNode) {
+      canvas.style.cursor = 'pointer';
+      tooltip.style.display = 'block';
+      tooltip.style.left = (e.clientX + 12) + 'px';
+      tooltip.style.top = (e.clientY + 12) + 'px';
+      var pieHtml = '';
+      if (hoveredNode.pie && hoveredNode.pie.length > 0) {
+        pieHtml = '<div style="margin-top:6px;border-top:1px solid #334155;padding-top:6px">';
+        pieHtml += '<div style="font-size:9px;color:#94a3b8;margin-bottom:4px">KATEGORIEN:</div>';
+        hoveredNode.pie.forEach(function(seg) {
+          pieHtml += '<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">';
+          pieHtml += '<div style="width:8px;height:8px;border-radius:2px;background:' + getCatColor(seg.category) + '"></div>';
+          pieHtml += '<span style="flex:1;font-size:9px;color:#e2e8f0">' + seg.category + '</span>';
+          pieHtml += '<span style="font-size:9px;color:#94a3b8">' + seg.percent + '%</span></div>';
+        });
+        pieHtml += '</div>';
+      }
+      var clickHint = hoveredNode.type === 'project' ? '<div style="margin-top:4px;font-size:8px;color:#38bdf8">CLICK to drill down</div>' :
+                       hoveredNode.type === 'thread' ? '<div style="margin-top:4px;font-size:8px;color:#38bdf8">CLICK to see messages</div>' : '';
+      tooltip.innerHTML = '<div class="tt-title">' + hoveredNode.label.substring(0, 50) + '</div>' +
+        '<div class="tt-row"><span>Type</span><span>' + hoveredNode.type + '</span></div>' +
+        '<div class="tt-row"><span>Size</span><span>' + hoveredNode.total + '</span></div>' +
+        '<div class="tt-row"><span>User</span><span>' + hoveredNode.user_msgs + '</span></div>' +
+        '<div class="tt-row"><span>Agent</span><span>' + hoveredNode.agent_msgs + '</span></div>' +
+        pieHtml + clickHint;
+    } else {
+      canvas.style.cursor = 'default';
+      tooltip.style.display = 'none';
+    }
+  });
+
+  canvas.addEventListener('click', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left;
+    var my = e.clientY - rect.top;
+    var clicked = null;
+    var allNodes = particles.filter(function(p) { return p.type !== 'bg'; });
+    allNodes.forEach(function(p) {
+      var dx = mx - p.x, dy = my - p.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < p.size + 15) clicked = p;
+    });
+    if (!clicked) return;
+    // Side-Panel Detail beim Klick
+    showBubbleDetail(clicked);
+    if (clicked.type === 'project') {
+      window.zoomIntoProject(clicked);
+    } else if (clicked.type === 'thread') {
+      window.zoomIntoThread(clicked);
+    }
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    tooltip.style.display = 'none'; hoveredNode = null;
+  });
+
+  // Escape zum Zurueck
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && navStack.length > 1) {
+      drillUpTo(navStack.length - 2);
+    }
+  });
+
+  // ── Side-Panel Detail beim Klick ─────────────────────────────────
+  window.showBubbleDetail = function(node) {
+    // Tab wechseln zu 'projects' oder eigenes Detail
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    var tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns[1].classList.add('active'); // Projekte-Tab
+    document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('tab-projects').classList.add('active');
+
+    var el = document.getElementById('projectList');
+    if (!el) return;
+
+    // Detail-View
+    var html = '<div style="margin-bottom:16px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+    html += '<span style="font-size:16px;font-weight:700;color:var(--accent)">' + node.label + '</span>';
+    html += '<span style="font-size:11px;padding:2px 8px;border-radius:6px;background:' + (node.color || '#334155') + '20;color:' + (node.color || '#334155') + '">' + node.type + '</span>';
+    html += '</div>';
+
+    // Stats-Grid
+    html += '<div class="overview-grid">';
+    html += '<div class="ov-card"><div class="val" style="color:var(--accent)" id="detail-total">' + node.total + '</div><div class="lbl">' + (node.type === 'project' ? 'Threads' : 'Messages') + '</div></div>';
+    html += '<div class="ov-card"><div class="val" style="color:var(--accent2)" id="detail-user">' + (node.user_msgs || 0) + '</div><div class="lbl">User Inputs</div></div>';
+    html += '<div class="ov-card"><div class="val" style="color:var(--accent3)" id="detail-agent">' + (node.agent_msgs || 0) + '</div><div class="lbl">Agent Responses</div></div>';
+    html += '<div class="ov-card"><div class="val" style="color:' + (node.completeness > 80 ? 'var(--complete)' : node.completeness > 50 ? 'var(--partial)' : 'var(--incomplete)') + '" id="detail-pct">' + (node.completeness || 0) + '%</div><div class="lbl">Vollstaendig</div></div>';
+    html += '</div>';
+
+    // Completeness Bar
+    html += '<div style="height:6px;border-radius:3px;background:var(--bg);margin:8px 0;overflow:hidden">';
+    html += '<div style="height:100%;width:' + (node.completeness || 0) + '%;background:' + (node.completeness > 80 ? 'var(--complete)' : node.completeness > 50 ? 'var(--partial)' : 'var(--incomplete)') + ';border-radius:3px"></div>';
+    html += '</div>';
+
+    // Plattformen
+    if (node.platforms && node.platforms.length > 0) {
+      html += '<div style="font-size:10px;color:var(--text2);margin:8px 0 4px">Plattformen</div>';
+      html += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
+      node.platforms.forEach(function(p) {
+        html += '<span style="font-size:9px;background:var(--accent)15;color:var(--accent);padding:2px 6px;border-radius:4px">' + p + '</span>';
+      });
+      html += '</div>';
+    }
+
+    // Git-Commits + Artefakte
+    if (node.type === 'project') {
+      var projThreads = THREADS.filter(function(t) { return t.project === node.label; });
+      var committedThreads = projThreads.filter(function(t) { return t.has_commits; });
+      var prThreads = projThreads.filter(function(t) { return t.has_pr; });
+      var mergedPRs = prThreads.filter(function(t) { return t.pr_status === 'merged'; });
+      var branchThreads = projThreads.filter(function(t) { return t.has_branch; });
+      var completedThreads = projThreads.filter(function(t) { return t.commit_status === 'committed' || t.has_pr; });
+
+      html += '<div class="section-title">Produktion</div>';
+      html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">';
+      html += '<div class="ov-card"><div class="val" style="color:var(--committed)">' + committedThreads.length + '</div><div class="lbl">Commits</div></div>';
+      html += '<div class="ov-card"><div class="val" style="color:#3b82f6">' + mergedPRs.length + '</div><div class="lbl">PRs Merged</div></div>';
+      html += '<div class="ov-card"><div class="val" style="color:#8b5cf6">' + branchThreads.length + '</div><div class="lbl">Branches</div></div>';
+      html += '</div>';
+
+      // PR-Liste
+      if (prThreads.length > 0) {
+        html += '<div class="section-title">Pull Requests</div>';
+        prThreads.forEach(function(t) {
+          var prColor = t.pr_status === 'merged' ? 'var(--committed)' : t.pr_status === 'open' ? '#3b82f6' : 'var(--warn)';
+          html += '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(63,63,70,0.3)">';
+          html += '<div style="width:5px;height:5px;border-radius:50%;background:' + prColor + ';flex-shrink:0"></div>';
+          html += '<div style="flex:1;font-size:10px;color:var(--text)">' + t.title.substring(0, 40) + '</div>';
+          html += '<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:' + prColor + '15;color:' + prColor + ';font-weight:600">' + t.pr_status.toUpperCase() + '</span>';
+          html += '</div>';
+          if (t.artifacts) {
+            t.artifacts.forEach(function(a) {
+              if ((a.type === 'pull_request' || a.type === 'local_merge') && a.url) {
+                html += '<div style="font-size:9px;color:var(--text3);padding-left:12px"><a href="' + a.url + '" target="_blank" style="color:#3b82f6;text-decoration:none">' + a.url.split('/').pop() + '</a></div>';
+              }
+            });
+          }
+        });
+      }
+    }
+
+    // Kategorien (Pie-Segmente)
+    if (node.pie && node.pie.length > 0) {
+      html += '<div style="font-size:10px;color:var(--text2);margin:12px 0 4px">Kategorien</div>';
+      html += '<div style="display:flex;flex-direction:column;gap:3px">';
+      node.pie.forEach(function(seg) {
+        html += '<div style="display:flex;align-items:center;gap:6px">';
+        html += '<div style="width:10px;height:10px;border-radius:2px;background:' + getCatColor(seg.category) + '"></div>';
+        html += '<span style="flex:1;font-size:9px;color:var(--text)">' + seg.category + '</span>';
+        html += '<span style="font-size:9px;color:var(--text2)">' + seg.count + ' (' + seg.percent + '%)</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Abhaengigkeiten
+    if (node.depends_on && node.depends_on.length > 0) {
+      html += '<div style="font-size:10px;color:var(--text2);margin:12px 0 4px">Abhaengigkeiten</div>';
+      node.depends_on.forEach(function(dep) {
+        html += '<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:9px">';
+        html += '<span style="color:var(--accent)">&rarr;</span>';
+        html += '<span style="color:var(--text)">' + dep.project + '</span>';
+        html += '<span style="color:var(--text2)">(' + dep.shared_platforms.join(', ') + dep.shared_categories.join(', ') + ')</span>';
+        html += '</div>';
+      });
+    }
+
+    html += '</div>';
+
+    // Threadsliste (bei Projekt-Click)
+    if (node.type === 'project') {
+      var projThreads = THREADS.filter(function(t) { return t.project === node.label; });
+      html += '<div style="font-size:10px;color:var(--text2);margin:12px 0 4px">Threads (' + projThreads.length + ')</div>';
+      projThreads.slice(0, 30).forEach(function(t) {
+        var dotColor = t.has_agent_response ? 'var(--complete)' : t.has_interrupts ? 'var(--warn)' : 'var(--incomplete)';
+        html += '<div style="display:flex;gap:6px;padding:4px 0;border-bottom:1px solid rgba(51,65,85,0.2)">';
+        html += '<div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';flex-shrink:0;margin-top:3px"></div>';
+        var commitBadge = t.has_commits ? '<span class="commit-badge">COMMIT</span>' : '';
+        var prBadge = '';
+        if (t.has_pr) {
+          var prColor = t.pr_status === 'merged' ? '#10b981' : t.pr_status === 'open' ? '#3b82f6' : '#f59e0b';
+          prBadge = '<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:' + prColor + '15;color:' + prColor + ';font-weight:600;margin-left:4px;border:1px solid ' + prColor + '30">PR ' + t.pr_status.toUpperCase() + '</span>';
+        }
+        var branchBadge = t.has_branch ? '<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:#8b5cf615;color:#8b5cf6;font-weight:600;margin-left:4px;border:1px solid #8b5cf630">BRANCH</span>' : '';
+        var commitInfo = '';
+        if (t.git_commits && t.git_commits.length > 0) {
+          var c = t.git_commits[0];
+          commitInfo = '<div style="margin-top:3px"><span class="commit-hash">' + c.hash + '</span> <span style="font-size:10px;color:var(--text3)">' + c.message.substring(0, 45) + '</span></div>';
+        }
+        var prInfo = '';
+        if (t.artifacts) {
+          t.artifacts.forEach(function(a) {
+            if (a.type === 'pull_request' || a.type === 'local_merge') {
+              var url = a.url ? '<a href="' + a.url + '" target="_blank" style="color:#3b82f6;text-decoration:none">#' + (a.number || '?') + '</a>' : '#' + (a.number || '?');
+              prInfo += '<div style="font-size:9px;color:var(--text3);margin-top:2px">\u{1F4E6} ' + url + ' ' + a.status + '</div>';
+            }
+          });
+        }
+        html += '<div style="flex:1;font-size:9px">';
+        html += '<div style="color:var(--text)">' + t.title.substring(0, 50) + commitBadge + prBadge + branchBadge + '</div>';
+        html += '<div style="color:var(--text3)">' + t.date + ' &middot; ' + t.platform + ' &middot; ' + t.message_count + ' msgs</div>';
+        html += commitInfo;
+        html += prInfo;
+        html += '</div></div>';
+      });
+    }
+
+    // Messages (bei Thread-Click)
+    if (node.type === 'thread' && node.threadData && node.threadData.messages) {
+      html += '<div style="font-size:10px;color:var(--text2);margin:12px 0 4px">Messages</div>';
+      node.threadData.messages.slice(0, 20).forEach(function(m) {
+        var roleColor = m.role === 'user' ? 'var(--accent)' : m.role === 'assistant' ? 'var(--accent3)' : 'var(--warn)';
+        var roleLabel = m.role === 'user' ? 'USER' : m.role === 'assistant' ? 'AGENT' : 'TOOL';
+        var msgType = m.message_type || 'normal';
+        if (msgType === 'interrupt') { roleColor = 'var(--err)'; roleLabel = 'INTERRUPT'; }
+        html += '<div style="padding:4px 0;border-bottom:1px solid rgba(51,65,85,0.2)">';
+        html += '<span style="font-size:8px;padding:1px 4px;border-radius:3px;background:' + roleColor + '20;color:' + roleColor + ';font-weight:600">' + roleLabel + '</span>';
+        html += '<div style="font-size:9px;color:var(--text);margin-top:2px;max-height:40px;overflow:hidden">' + m.content.substring(0, 200).replace(/</g, '&lt;') + '</div>';
+        html += '</div>';
+      });
+    }
+
+    el.innerHTML = html;
+  };
+
+  resize(); initParticles(); renderBreadcrumb(); animate();
+  window._getParticles = function() { return particles; };
+  window.addEventListener('resize', function() { resize(); initParticles(); });
+})();
+</script>
+</body>
+</html>

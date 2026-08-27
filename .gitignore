@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Output artifacts in subfolders (nicht committen)
+output/
+dist/
+
+# Private data (keine Screenshots, keine Logs)
+*.png
+*.jpg
+*.jpeg
+*.log
+*.db
+
+# Temp
+*.tmp
+*.bak
