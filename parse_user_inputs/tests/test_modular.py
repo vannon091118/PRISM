@@ -102,10 +102,12 @@ def test_hermes_detect_message_type():
 def test_freebuff_helpers():
     """Freebuff Helper-Funktionen."""
     from parse_user_inputs.sources.freebuff import _extract_project_name, _ts_to_str
+    # Generisch: Nur noch basename extrahieren
     assert _extract_project_name("/path/to/snip-war") == "snip-war"
     assert _extract_project_name("/path/to/snippet-empire") == "snippet-empire"
     assert _extract_project_name("/path/to/myproject") == "myproject"
     assert _extract_project_name("") == "unknown"
+    assert _extract_project_name("/path/to/project/") == "project"
     assert _ts_to_str(0) == "?"
     assert _ts_to_str(1700000000000).startswith("2023")
     print("[OK] Freebuff Helpers korrekt")

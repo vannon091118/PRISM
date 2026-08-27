@@ -47,8 +47,8 @@ print(f'  Completed: {total_completed}')
 from parse_user_inputs.sources.git_reader import read_commits
 for proj in data['projects']:
     name = os.path.basename(proj.get('path', '')) or 'root'
-    if name in ('snippet-empire', 'user_inputs_parser'):
-        proj_path = proj.get('path', '')
+    proj_path = proj.get('path', '')
+    if proj_path and os.path.exists(os.path.join(proj_path, '.git')):
         commits = read_commits(proj_path, max_count=10)
         if commits:
             print(f'\n  [{name}] Git Commits: {len(commits)}')

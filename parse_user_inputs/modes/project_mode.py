@@ -68,7 +68,7 @@ def run_project_mode(cfg: Config, raw_args: dict[str, str]) -> dict:
     paste_images = read_paste_images(cfg.paste_dir)
     print(f"  Paste-PNGs: {len(paste_images)}")
 
-    project_filter = raw_args.get("project_filter", "snip-war")
+    project_filter = raw_args.get("project_filter", "")
     freebuff_inputs = read_freebuff_threads(
         api_host=cfg.freebuff_api_host,
         api_port=cfg.freebuff_api_port,

@@ -161,12 +161,12 @@ def _extract_project_name(proj_path: str) -> str:
     """Extrahiert den Projekt-Namen aus dem Pfad."""
     if not proj_path:
         return "unknown"
-    lower = proj_path.lower()
-    if "snip-war" in lower:
-        return "snip-war"
-    if "snippet-empire" in lower:
-        return "snippet-empire"
-    return os.path.basename(proj_path)
+    # Letzter Verzeichnisname als Projekt-Name
+    # Strip trailing separators first
+    stripped = proj_path.rstrip("/\\")
+    if not stripped:
+        return "unknown"
+    return os.path.basename(stripped) or "unknown"
 
 
 def _ts_to_str(ts: float) -> str:

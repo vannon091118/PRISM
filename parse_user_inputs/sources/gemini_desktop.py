@@ -77,7 +77,8 @@ def scan_inputs() -> list[dict[str, Any]]:
                         paths = _extract_file_paths(blob)
                         # Workspace-Pfad als Projekt-Info
                         for p in paths:
-                            if "snippet-empire" in p.lower() or "snip-war" in p.lower():
+                            # Generisch: Jeden Workspace-Pfad als Input erfassen
+                            if len(p) > 10:
                                 inputs.append({
                                     "date": "?",
                                     "content": f"Workspace: {p}",
@@ -165,18 +166,11 @@ def reconstruct_threads() -> list[Thread]:
             if not messages:
                 continue
 
-            # Projekt aus Workspace-Pfad
+            # Projekt aus Workspace-Pfad (generisch)
             project = "unknown"
             if workspace:
-                lower = workspace.lower()
-                if "snip-war" in lower:
-                    project = "snip-war"
-                elif "snippet-empire" in lower:
-                    project = "snippet-empire"
-                elif "godu" in lower or "godot" in lower:
-                    project = "godot-project"
-                else:
-                    project = os.path.basename(workspace)
+                # Letzter Verzeichnisname als Projekt-Name
+                project = os.path.basename(workspace.rstrip(os.sep)) or "unknown"
 
             user_text = " ".join(m.content for m in messages if m.is_user)
             cats = categorize(user_text) if user_text else ["UNCATEGORIZED"]

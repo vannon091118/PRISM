@@ -143,39 +143,42 @@ def scan_all_threads() -> dict[str, list[Thread]]:
 
 def _match_git_commits(results: dict[str, list[Thread]]):
     """Liest Git-Commits und matcht sie mit Threads."""
-    from parse_user_inputs.sources.git_reader import read_commits
+    from parse_user_inputs.sources.git_reader import read_commits, find_git_repos
     from parse_user_inputs.sorting import parse_date
+    from parse_user_inputs.config import Config
 
     # Sammle alle Projekt-Pfade
     project_paths: dict[str, str] = {}  # project_name -> path
+    
+    # Erst: Alle bekannten Git-Repos im Home-Verzeichnis finden
+    home = os.path.expanduser("~")
+    known_repos = find_git_repos(home, max_depth=3)
+    
+    # Projekt-Namen zu Pfaden zuordnen
     for pid, threads in results.items():
         for t in threads:
             proj = t.project
             if proj and proj not in project_paths:
-                # Versuche Pfad zu erraten
-                for candidate in [
-                    os.path.join(os.path.expanduser("~"), "Documents", proj),
-                    os.path.join(os.path.expanduser("~"), "Desktop", proj),
-                    os.path.join(os.path.expanduser("~"), proj),
-                    os.path.join("C:\\", proj),
-                ]:
-                    if os.path.exists(os.path.join(candidate, ".git")):
-                        project_paths[proj] = candidate
+                # Suche nach Verzeichnis das dem Projekt-Namen entspricht
+                for repo_path in known_repos:
+                    repo_name = os.path.basename(repo_path)
+                    if repo_name.lower() == proj.lower() or proj.lower() in repo_name.lower():
+                        project_paths[proj] = repo_path
                         break
-
-    # Freebuff-Projekte: Pfade aus API-Namen extrahieren
-    if "freebuff" in results:
-        for t in results["freebuff"]:
-            proj = t.project
-            if proj and proj not in project_paths:
-                for candidate in [
-                    os.path.join(os.path.expanduser("~"), "Documents", "snippet-empire", proj),
-                    os.path.join(os.path.expanduser("~"), "Documents", "snippet-empire"),
-                    os.path.join(os.path.expanduser("~"), "Desktop", proj),
-                ]:
-                    if os.path.exists(os.path.join(candidate, ".git")):
-                        project_paths[proj] = candidate
-                        break
+                
+                # Fallback: Standard-Suchpfade (portabel)
+                if proj not in project_paths:
+                    for candidate in [
+                        os.path.join(home, "Documents", proj),
+                        os.path.join(home, "Desktop", proj),
+                        os.path.join(home, "Projects", proj),
+                        os.path.join(home, "repos", proj),
+                        os.path.join(home, "code", proj),
+                        os.path.join(home, proj),
+                    ]:
+                        if os.path.exists(os.path.join(candidate, ".git")):
+                            project_paths[proj] = candidate
+                            break
 
     # Commits lesen und matchen
     all_commits_by_project: dict[str, list[dict]] = {}
