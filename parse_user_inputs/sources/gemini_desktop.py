@@ -154,31 +154,51 @@ def reconstruct_threads() -> list[Thread]:
                 pass
 
             # Steps durchgehen
+            # Step-Typen:
+            #   14 = User-Input (echte Nachricht)
+            #   15 = Agent-Response
+            #   132 = Tool-Call
+            #   23 = Session-Metadata
             try:
                 for row in conn.execute("SELECT * FROM steps ORDER BY rowid"):
                     step_type = row[1] if len(row) > 1 else 0
                     
-                    # User-Input aus Spalte 9 (step_payload)
-                    payload = row[9] if len(row) > 9 else None
-                    if payload and isinstance(payload, bytes):
-                        texts = _extract_user_texts(payload)
-                        for text in texts:
-                            if _is_user_input(text):
-                                messages.append(Message(
-                                    role="user",
-                                    content=text[:2000],
-                                    model=model,
-                                ))
+                    # Nur User-Input aus Step-Typ 14 extrahieren
+                    if step_type == 14:
+                        payload = row[9] if len(row) > 9 else None
+                        if payload and isinstance(payload, bytes):
+                            texts = _extract_user_texts(payload)
+                            for text in texts:
+                                if _is_user_input(text):
+                                    messages.append(Message(
+                                        role="user",
+                                        content=text[:2000],
+                                        model=model,
+                                    ))
 
-                    # Agent-Output aus Spalte 4 (metadata)
-                    meta = row[4] if len(row) > 4 else None
-                    if meta and isinstance(meta, bytes):
-                        texts = _extract_user_texts(meta)
-                        for text in texts:
-                            if _is_agent_output(text):
+                    # Agent-Output aus Step-Typ 15
+                    elif step_type == 15:
+                        meta = row[4] if len(row) > 4 else None
+                        if meta and isinstance(meta, bytes):
+                            texts = _extract_user_texts(meta)
+                            for text in texts:
+                                if _is_agent_output(text):
+                                    messages.append(Message(
+                                        role="assistant",
+                                        content=text[:2000],
+                                        model=model,
+                                    ))
+
+                    # Tool-Call-Output aus Step-Typ 132
+                    elif step_type == 132:
+                        payload = row[9] if len(row) > 9 else None
+                        if payload and isinstance(payload, bytes):
+                            texts = _extract_user_texts(payload)
+                            tool_texts = [t for t in texts if t.startswith('{')]
+                            if tool_texts:
                                 messages.append(Message(
-                                    role="assistant",
-                                    content=text[:2000],
+                                    role="tool",
+                                    content=tool_texts[0][:2000],
                                     model=model,
                                 ))
             except Exception:
@@ -206,11 +226,24 @@ def reconstruct_threads() -> list[Thread]:
             user_text = " ".join(m.content for m in messages if m.is_user)
             cats = categorize(user_text) if user_text else ["UNCATEGORIZED"]
 
+            # Titel: Erste echte User-Nachricht verwenden (Protobuf-Garbage ueberspringen)
+            title = "?"
+            user_count = 0
+            for m in messages:
+                if m.is_user:
+                    user_count += 1
+                    # Erste echte Nachricht (nach Protobuf-Metadata)
+                    if user_count > 1 and len(m.content) > 10:
+                        # Protobuf-Garbage filtern
+                        if not m.content.startswith('L') and not m.content.startswith('b$'):
+                            title = m.content[:80]
+                            break
+
             threads.append(Thread(
                 id=f"gemini_desktop_{trajectory_id[:8] or db_idx}",
                 platform=PLATFORM_ID,
                 project=project,
-                title=messages[0].content[:60] if messages else "?",
+                title=title,
                 date=date_str,
                 messages=messages,
                 categories=cats,
