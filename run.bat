@@ -1,18 +1,19 @@
 @echo off
-REM User-Inputs Parser - SnipWar Projekt
-REM Voraussetzung: Freebuff Desktop laeuft, Python im PATH
+REM PRISM — Platform Recognition & Input Session Miner
+REM Scannt alle Plattformen und generiert Dashboard
 
-set PROJECT=C:\Users\Vannon\Documents\snippet-empire\snip-war
 set SCRIPT=%~dp0parse_user_inputs.py
 set OUTDIR=%~dp0
 
-echo === User-Inputs Parser ===
-echo Projekt: %PROJECT%
-echo Output: %OUTDIR%
+echo === PRISM Dashboard Generator ===
 echo.
 
-python "%SCRIPT%" "%PROJECT%" --html "%OUTDIR%USER_INPUTS_DASHBOARD.html" --output "%OUTDIR%USER_INPUTS_ARTIFACT.md"
+REM Scan all platforms and generate dashboard
+python "%SCRIPT%" --scan --output "%OUTDIR%docs\screenshots\dashboard_data.json"
+
+REM Generate interactive dashboard HTML
+python -m parse_user_inputs.renderers.generate_dashboard
 
 echo.
-echo Fertig! Oeffne USER_INPUTS_DASHBOARD.html im Browser.
+echo Fertig! Oeffne DASHBOARD.html im Browser.
 pause

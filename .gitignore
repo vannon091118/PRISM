@@ -34,6 +34,17 @@ dist/
 *.log
 *.db
 
+# Generated dashboard (regenerate with: python parse_user_inputs/renderers/generate_dashboard.py)
+DASHBOARD.html
+
 # Temp
 *.tmp
 *.bak
+*.pyc
+
+# Tools debug output
+*.db
+
+# Freebuff Desktop data
+*.db-shm
+*.db-wal
