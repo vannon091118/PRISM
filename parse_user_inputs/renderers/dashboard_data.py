@@ -55,11 +55,23 @@ def generate_dashboard_data(
     
     for platform_id, threads in threads_by_platform.items():
         if threads:
+            total_msgs = sum(t.message_count for t in threads)
+            # Group by project for this platform
+            platform_projects = {}
+            for t in threads:
+                pname = t.project or 'unknown'
+                if pname not in platform_projects:
+                    platform_projects[pname] = {'name': pname, 'threadCount': 0, 'messageCount': 0}
+                platform_projects[pname]['threadCount'] += 1
+                platform_projects[pname]['messageCount'] += t.message_count
             platforms.append({
                 'id': platform_id,
                 'name': platform_id.replace('_', ' ').title(),
                 'count': len(threads),
+                'threadCount': len(threads),
+                'messageCount': total_msgs,
                 'color': platform_colors.get(platform_id, '#6b7280'),
+                'projects': sorted(platform_projects.values(), key=lambda p: -p['threadCount']),
             })
     
     # Sort by count descending
@@ -140,11 +152,14 @@ def generate_dashboard_data(
     no_agent = []
     for thread in all_threads:
         if not thread.has_agent_response:
+            user_input = thread.user_input if thread.user_input else ''
             no_agent.append({
+                'id': thread.id,
                 'title': thread.title,
                 'platform': thread.platform,
+                'project': thread.project or 'unknown',
                 'date': thread.date,
-                'user': thread.user_input or '',
+                'user': user_input,
                 'cats': thread.categories,
             })
     # Sort by date descending

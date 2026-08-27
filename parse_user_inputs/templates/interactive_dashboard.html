@@ -5996,7 +5996,8 @@ function updateProjects() {
   const ps = currentCtx?.platform ? DATA.projects.filter(p=>p.platform===currentCtx.platform.id) : DATA.projects;
   document.getElementById('projectList').innerHTML = ps.map(p => {
     const top = Object.entries(p.cats||{}).sort((a,b)=>b[1]-a[1])[0];
-    return `<div class="proj-card" onclick="clickProj('${p.name}')"><div class="proj-head"><span class="proj-name">${p.name}</span><span class="proj-pct" style="color:${p.color}">${p.threads}</span></div><div class="proj-bar"><div class="proj-bar-fill" style="width:${p.threads/109*100}%;background:${p.color}"></div></div><div class="proj-meta"><span class="proj-tag">${top?top[0]:'N/A'}</span><span class="proj-tag">${p.platform}</span></div></div>`;
+    const maxThreads = Math.max(...DATA.projects.map(p=>p.threads));
+    return `<div class="proj-card" onclick="clickProj('${p.name}')"><div class="proj-head"><span class="proj-name">${p.name}</span><span class="proj-pct" style="color:${p.color}">${p.threads}</span></div><div class="proj-bar"><div class="proj-bar-fill" style="width:${p.threads/maxThreads*100}%;background:${p.color}"></div></div><div class="proj-meta">${(p.platforms||[]).map(pl=>`<span class="proj-tag">${pl}</span>`).join('')}<span class="proj-tag">${top?top[0]:'N/A'}</span></div></div>`;
   }).join('');
 }
 

@@ -119,7 +119,9 @@ def reconstruct_threads(db_path: str | None = None) -> list[Thread]:
             if not any(m.is_user for m in data["messages"]):
                 continue
 
-            project = data["title"][:60] if data["title"] else "unknown"
+            # Hermes-Sessions haben keine Projektinfo, nutze generischen Namen
+            # Versuche Projekt aus User-Messages zu erkenen
+            project = _detect_project(data["messages"], data["title"])
             all_user_text = " ".join(m.content for m in data["messages"] if m.is_user)
             cats = categorize(all_user_text)
 
@@ -137,6 +139,36 @@ def reconstruct_threads(db_path: str | None = None) -> list[Thread]:
         pass
 
     return threads
+
+
+def _detect_project(messages: list[Message], title: str) -> str:
+    """Erkennt das Projekt aus User-Messages oder Session-Titel."""
+    import re
+    
+    # Bekannte Projekt-Pfade/Muster in User-Messages
+    known_projects = {
+        'snip-war': 'snip-war',
+        'snippet-empire': 'snippet-empire',
+        'SyxBridge_Live': 'SyxBridge_Live',
+        'RhytmusIsaPatter': 'RhytmusIsaPatter',
+        'user_inputs_parser': 'user_inputs_parser',
+        'PRISM': 'PRISM',
+    }
+    
+    for m in messages:
+        if not m.is_user:
+            continue
+        text = m.content.lower()
+        for pattern, name in known_projects.items():
+            if pattern.lower() in text:
+                return name
+        # Pfad-Muster: C:\Users\...\projectname
+        path_match = re.search(r'[\/](?:Desktop|Documents|projects)[\/]+([\w_-]+)', m.content)
+        if path_match:
+            return path_match.group(1)
+    
+    # Fallback: Generischer Name
+    return "hermes-sessions"
 
 
 def _detect_message_type(content: str) -> str:

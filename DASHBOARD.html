@@ -1,4 +1,288 @@
-{
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISM — Animiertes Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090b; --bg2: #18181b; --bg3: #27272a;
+  --border: #3f3f46; --text: #fafafa; --text2: #a1a1aa; --text3: #71717a;
+  --accent: #3b82f6; --accent2: #10b981; --accent3: #8b5cf6;
+  --warn: #f59e0b; --err: #ef4444;
+  --radius: 10px; --radius-sm: 6px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.5;
+  height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.header {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0; z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.header h1 {
+  font-size: 15px; font-weight: 600; letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.header .meta { color: var(--text3); font-size: 11px; }
+.header .stats { display: flex; gap: 4px; }
+.header .stat {
+  text-align: center; padding: 4px 10px;
+  border-radius: var(--radius-sm); background: var(--bg3); min-width: 60px;
+}
+.header .stat .val { font-size: 16px; font-weight: 700; }
+.header .stat .lbl { font-size: 8px; text-transform: uppercase; color: var(--text3); }
+.header .stat.green .val { color: var(--accent2); }
+.header .stat.red .val { color: var(--err); }
+.header .stat.amber .val { color: var(--warn); }
+.header .stat.purple .val { color: var(--accent3); }
+.header .stat.blue .val { color: var(--accent); }
+
+/* ── Main ──────────────────────────────────────────────────────────────── */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Canvas ────────────────────────────────────────────────────────────── */
+.canvas-area { flex: 1; position: relative; overflow: hidden; background: var(--bg); }
+#bgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+#mainCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
+
+/* ── Breadcrumb ────────────────────────────────────────────────────────── */
+.breadcrumb {
+  position: absolute; top: 12px; left: 12px; z-index: 50;
+  display: flex; gap: 4px; align-items: center;
+}
+.bc-item {
+  background: rgba(9,9,11,0.9); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 5px 10px; font-size: 11px;
+  color: var(--text3); cursor: pointer; transition: all 0.2s;
+  font-weight: 500; backdrop-filter: blur(8px);
+}
+.bc-item:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.bc-item.active { color: var(--accent); border-color: var(--accent); }
+.bc-sep { color: var(--text3); font-size: 10px; }
+
+/* ── Back Button ───────────────────────────────────────────────────────── */
+.back-btn {
+  position: absolute; top: 12px; left: 12px; z-index: 50;
+  background: rgba(9,9,11,0.9); border: 1px solid var(--accent);
+  border-radius: var(--radius-sm); padding: 5px 12px; font-size: 11px;
+  color: var(--accent); cursor: pointer; transition: all 0.2s;
+  font-family: inherit; display: none; font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+.back-btn:hover { background: var(--accent); color: var(--bg); transform: translateX(-2px); }
+.back-btn.visible { display: flex; align-items: center; gap: 6px; }
+
+/* ── Legend ─────────────────────────────────────────────────────────────── */
+.canvas-overlay {
+  position: absolute; bottom: 12px; left: 12px; right: 12px;
+  display: flex; gap: 6px; pointer-events: none;
+}
+.canvas-legend {
+  background: rgba(9,9,11,0.92); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 6px 10px; font-size: 10px;
+  display: flex; gap: 10px; align-items: center; pointer-events: auto;
+  backdrop-filter: blur(8px);
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Side Panel ────────────────────────────────────────────────────────── */
+.side-panel {
+  width: 400px; background: var(--bg2); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.tab-bar { display: flex; border-bottom: 1px solid var(--border); padding: 0 4px; }
+.tab-btn {
+  flex: 1; padding: 10px 6px; background: transparent; border: none;
+  color: var(--text3); font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+  border-bottom: 2px solid transparent;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+.tab-content {
+  flex: 1; overflow-y: auto; padding: 16px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.tab-content::-webkit-scrollbar { width: 4px; }
+.tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.tab-pane { display: none; animation: fadeIn 0.3s ease; }
+.tab-pane.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Cards ─────────────────────────────────────────────────────────────── */
+.section-title {
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+.ov-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px; text-align: center;
+  transition: all 0.2s;
+}
+.ov-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.ov-card .val { font-size: 22px; font-weight: 700; }
+.ov-card .lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; margin-top: 2px; }
+
+.integrity-bar {
+  height: 6px; border-radius: 3px; overflow: hidden;
+  display: flex; margin-bottom: 16px; background: var(--bg3);
+}
+
+.proj-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px; margin-bottom: 6px;
+  cursor: pointer; transition: all 0.2s;
+}
+.proj-card:hover { border-color: var(--accent); transform: translateX(4px); }
+.proj-card .proj-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.proj-card .proj-name { font-size: 13px; font-weight: 600; }
+.proj-card .proj-pct { font-size: 13px; font-weight: 700; }
+.proj-card .proj-bar { height: 3px; border-radius: 2px; background: var(--bg); overflow: hidden; margin-bottom: 8px; }
+.proj-card .proj-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+.proj-card .proj-meta { display: flex; gap: 6px; font-size: 10px; color: var(--text3); flex-wrap: wrap; }
+.proj-card .proj-tag { background: var(--bg); border-radius: 3px; padding: 1px 5px; border: 1px solid var(--border); }
+
+.thread-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px; margin-bottom: 6px;
+  cursor: pointer; transition: all 0.2s;
+}
+.thread-card:hover { border-color: var(--accent); transform: translateX(4px); }
+.thread-card .thread-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.thread-card .thread-title { font-size: 12px; font-weight: 500; flex: 1; }
+.thread-card .thread-platform {
+  font-size: 9px; padding: 2px 6px; border-radius: 3px;
+  text-transform: uppercase; font-weight: 600; flex-shrink: 0;
+}
+.thread-card .thread-meta { display: flex; gap: 6px; font-size: 10px; color: var(--text3); }
+.thread-card .thread-tag { background: var(--bg); border-radius: 3px; padding: 1px 5px; border: 1px solid var(--border); }
+.thread-card .thread-snippet { font-size: 11px; color: var(--text2); margin-top: 6px; max-height: 40px; overflow: hidden; }
+
+.msg-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px;
+  animation: slideIn 0.3s ease;
+}
+@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+.msg-card .msg-role { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 4px; }
+.msg-card .msg-role.user { color: var(--accent); }
+.msg-card .msg-role.assistant { color: var(--accent3); }
+.msg-card .msg-content { font-size: 12px; color: var(--text2); white-space: pre-wrap; word-break: break-word; max-height: 120px; overflow: hidden; line-height: 1.5; }
+
+.commit-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9px; padding: 1px 6px; border-radius: 3px;
+  font-weight: 600; background: rgba(16,185,129,0.1); color: var(--accent2);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+
+/* ── Tooltip ───────────────────────────────────────────────────────────── */
+#tooltip {
+  display: none; position: fixed; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 14px; font-size: 11px; pointer-events: none;
+  z-index: 100; max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); backdrop-filter: blur(12px);
+  animation: tooltipIn 0.15s ease;
+}
+@keyframes tooltipIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+#tooltip .tt-title { font-weight: 600; margin-bottom: 6px; font-size: 12px; }
+#tooltip .tt-row { display: flex; justify-content: space-between; color: var(--text3); padding: 1px 0; }
+
+/* ── Detail Panel ──────────────────────────────────────────────────────── */
+.detail-panel {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--bg2); border-top: 1px solid var(--border);
+  padding: 16px; max-height: 50%; overflow-y: auto;
+  transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 60;
+}
+.detail-panel.visible { transform: translateY(0); }
+.detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.detail-title { font-size: 14px; font-weight: 600; }
+.detail-close {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 4px 8px; color: var(--text3);
+  cursor: pointer; font-size: 11px; transition: all 0.2s;
+}
+.detail-close:hover { border-color: var(--err); color: var(--err); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span style="font-size:18px">&#x25C8;</span> PRISM</h1>
+    <div class="meta" id="headerMeta">Multi-Plattform Scan</div>
+  </div>
+  <div class="stats" id="headerStats"></div>
+</div>
+
+<div class="main">
+  <div class="canvas-area">
+    <canvas id="bgCanvas"></canvas>
+    <canvas id="mainCanvas"></canvas>
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <button class="back-btn" id="backBtn" onclick="goBack()">&#8592; Zurueck</button>
+    <div class="canvas-overlay">
+      <div class="canvas-legend">
+        <div class="dot" style="background:var(--accent2)"></div> Vollstaendig
+        <div class="dot" style="background:var(--warn)"></div> Teilweise
+        <div class="dot" style="background:var(--err)"></div> Unvollstaendig
+        <div class="dot" style="background:var(--accent)"></div> Plattform
+      </div>
+    </div>
+    <div id="tooltip"></div>
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-header">
+        <span class="detail-title" id="detailTitle">Details</span>
+        <button class="detail-close" onclick="closeDetail()">&#10005;</button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <div class="side-panel">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'overview')">Uebersicht</button>
+      <button class="tab-btn" onclick="switchTab(this,'projects')">Projekte</button>
+      <button class="tab-btn" onclick="switchTab(this,'threads')">Threads</button>
+      <button class="tab-btn" onclick="switchTab(this,'timeline')">Zeitstrahl</button>
+      <button class="tab-btn" onclick="switchTab(this,'integrity')">Integritaet</button>
+    </div>
+    <div class="tab-content">
+      <div class="tab-pane active" id="tab-overview">
+        <div class="overview-grid" id="overviewGrid"></div>
+        <div style="margin-bottom:12px;font-size:11px;font-weight:600;">Integritaet</div>
+        <div class="integrity-bar" id="integrityBar"></div>
+        <div style="margin-bottom:12px;font-size:11px;font-weight:600;">Plattformen</div>
+        <div id="platformList"></div>
+      </div>
+      <div class="tab-pane" id="tab-projects"><div id="projectList"></div></div>
+      <div class="tab-pane" id="tab-threads"><div id="threadList"></div></div>
+      <div class="tab-pane" id="tab-timeline"><div id="timelineList"></div></div>
+      <div class="tab-pane" id="tab-integrity"><div id="integrityIssues"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════════
+const DATA = {
   "stats": {
     "threads": 342,
     "answered": 210,
@@ -7320,4 +7604,458 @@
       ]
     }
   ]
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let level = 'platforms';
+let ctx = null;
+let bgCtx = null;
+let W = 0, H = 0;
+let bubbles = [];
+let particles = [];
+let hovered = null;
+let history = [];
+let currentCtx = null;
+let time = 0;
+let transitionProgress = 1;
+let transitionFrom = [];
+let targetBubbles = [];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PARTICLES (background)
+// ═══════════════════════════════════════════════════════════════════════════
+function initParticles() {
+  particles = [];
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5,
+      alpha: Math.random() * 0.3 + 0.1,
+    });
+  }
 }
+
+function updateParticles() {
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0) p.x = W;
+    if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H;
+    if (p.y > H) p.y = 0;
+  });
+}
+
+function drawParticles() {
+  bgCtx.clearRect(0, 0, W, H);
+  // Grid
+  bgCtx.strokeStyle = 'rgba(255,255,255,0.02)';
+  bgCtx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 50) {
+    bgCtx.beginPath(); bgCtx.moveTo(x, 0); bgCtx.lineTo(x, H); bgCtx.stroke();
+  }
+  for (let y = 0; y < H; y += 50) {
+    bgCtx.beginPath(); bgCtx.moveTo(0, y); bgCtx.lineTo(W, y); bgCtx.stroke();
+  }
+  // Particles
+  particles.forEach(p => {
+    bgCtx.beginPath();
+    bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    bgCtx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+    bgCtx.fill();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BUBBLES
+// ═══════════════════════════════════════════════════════════════════════════
+function layoutBubbles(animate = false) {
+  const prev = bubbles.map(b => ({x: b.x, y: b.y, r: b.r}));
+  bubbles = [];
+
+  if (level === 'platforms') {
+    const total = DATA.platforms.reduce((s,p) => s + p.count, 0);
+    DATA.platforms.forEach((p, i) => {
+      const r = Math.sqrt(p.count / total) * Math.min(W, H) * 0.32;
+      const angle = (i / DATA.platforms.length) * Math.PI * 2 - Math.PI / 2;
+      const dist = Math.min(W, H) * 0.28;
+      bubbles.push({
+        x: W/2 + Math.cos(angle) * dist, y: H/2 + Math.sin(angle) * dist,
+        r: Math.max(r, 28), color: p.color, label: p.name,
+        sub: p.count + ' Threads', data: p, type: 'platform',
+        phase: Math.random() * Math.PI * 2, // for floating animation
+      });
+    });
+  } else if (level === 'projects') {
+    const projs = currentCtx?.platform
+      ? DATA.projects.filter(p => p.platform === currentCtx.platform.id)
+      : DATA.projects;
+    projs.forEach((p, i) => {
+      const r = Math.sqrt(p.threads / 109) * Math.min(W, H) * 0.22;
+      const angle = (i / projs.length) * Math.PI * 2 - Math.PI / 2;
+      const dist = Math.min(W, H) * 0.25;
+      bubbles.push({
+        x: W/2 + Math.cos(angle) * dist, y: H/2 + Math.sin(angle) * dist,
+        r: Math.max(r, 32), color: p.color, label: p.name,
+        sub: p.threads + ' Threads', data: p, type: 'project',
+        phase: Math.random() * Math.PI * 2,
+      });
+    });
+  } else if (level === 'threads') {
+    const proj = currentCtx?.project;
+    const threads = proj?.threadList?.length > 0 ? proj.threadList : [
+      {id:'g1',title:'Beispiel-Thread',platform:proj?.platform||'?',date:'2026-08-27',cats:['FEATURE'],user:'Input',agent:'Antwort',commit:null},
+    ];
+    threads.forEach((t, i) => {
+      const angle = (i / threads.length) * Math.PI * 2 - Math.PI / 2;
+      const dist = Math.min(W, H) * 0.22;
+      const catColor = t.cats?.includes('BUG') ? '#ef4444' : t.cats?.includes('FEATURE') ? '#10b981' : '#8b5cf6';
+      bubbles.push({
+        x: W/2 + Math.cos(angle) * dist, y: H/2 + Math.sin(angle) * dist,
+        r: 35, color: catColor, label: t.title.substring(0, 20),
+        sub: t.platform, data: t, type: 'thread',
+        phase: Math.random() * Math.PI * 2,
+      });
+    });
+  }
+
+  // Animate from previous positions
+  if (animate && prev.length > 0) {
+    bubbles.forEach((b, i) => {
+      if (i < prev.length) {
+        b.x = prev[i].x;
+        b.y = prev[i].y;
+        b.r = prev[i].r;
+      }
+    });
+    transitionProgress = 0;
+    transitionFrom = prev.map(p => ({...p}));
+    targetBubbles = bubbles.map(b => ({x: b.x, y: b.y, r: b.r}));
+  }
+}
+
+function draw() {
+  time += 0.016;
+  ctx.clearRect(0, 0, W, H);
+
+  // Animate transition
+  if (transitionProgress < 1) {
+    transitionProgress = Math.min(1, transitionProgress + 0.04);
+    const ease = 1 - Math.pow(1 - transitionProgress, 3); // easeOutCubic
+    bubbles.forEach((b, i) => {
+      if (i < targetBubbles.length && i < transitionFrom.length) {
+        b.x = transitionFrom[i].x + (targetBubbles[i].x - transitionFrom[i].x) * ease;
+        b.y = transitionFrom[i].y + (targetBubbles[i].y - transitionFrom[i].y) * ease;
+        b.r = transitionFrom[i].r + (targetBubbles[i].r - transitionFrom[i].r) * ease;
+      }
+    });
+  }
+
+  // Floating animation
+  bubbles.forEach(b => {
+    b.x += Math.sin(time * 0.8 + b.phase) * 0.3;
+    b.y += Math.cos(time * 0.6 + b.phase * 1.3) * 0.2;
+  });
+
+  // Draw connections
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i < bubbles.length; i++) {
+    for (let j = i + 1; j < bubbles.length; j++) {
+      const a = bubbles[i], b = bubbles[j];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      if (dist < 350) {
+        const alpha = (1 - dist / 350) * 0.2;
+        const gradient = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+        gradient.addColorStop(0, a.color + Math.round(alpha * 255).toString(16).padStart(2,'0'));
+        gradient.addColorStop(1, b.color + Math.round(alpha * 255).toString(16).padStart(2,'0'));
+        ctx.strokeStyle = gradient;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Draw bubbles
+  bubbles.forEach(b => {
+    const isH = hovered === b;
+    const pulse = 1 + Math.sin(time * 2 + b.phase) * 0.02;
+    const scale = isH ? 1.1 : pulse;
+    const r = b.r * scale;
+
+    // Outer glow (animated)
+    const glowR = r * (1.4 + Math.sin(time * 1.5 + b.phase) * 0.1);
+    const grad = ctx.createRadialGradient(b.x, b.y, r * 0.5, b.x, b.y, glowR);
+    grad.addColorStop(0, b.color + '25');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, glowR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Main circle
+    ctx.fillStyle = b.color + (isH ? '35' : '20');
+    ctx.strokeStyle = b.color + (isH ? 'dd' : '70');
+    ctx.lineWidth = isH ? 2.5 : 1.5;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Inner ring pulse
+    ctx.strokeStyle = b.color + '30';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, r * (0.85 + Math.sin(time * 3 + b.phase) * 0.05), 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Pie slice (for projects)
+    if (b.type === 'project' && b.data.cats) {
+      const cats = Object.entries(b.data.cats);
+      const total = cats.reduce((s,[,v]) => s + v, 0);
+      let ang = -Math.PI / 2;
+      cats.forEach(([,count]) => {
+        const sweep = (count / total) * Math.PI * 2;
+        ctx.fillStyle = b.color + '35';
+        ctx.beginPath();
+        ctx.moveTo(b.x, b.y);
+        ctx.arc(b.x, b.y, r * 0.65, ang, ang + sweep);
+        ctx.closePath();
+        ctx.fill();
+        ang += sweep;
+      });
+    }
+
+    // Labels
+    ctx.fillStyle = '#fafafa';
+    ctx.font = `${isH ? '600' : '500'} ${Math.max(10, r * 0.18)}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.label, b.x, b.y - r * 0.08);
+
+    ctx.fillStyle = '#71717a';
+    ctx.font = `400 ${Math.max(8, r * 0.13)}px "JetBrains Mono", monospace`;
+    ctx.fillText(b.sub, b.x, b.y + r * 0.15);
+
+    // Click hint on hover
+    if (isH && b.type !== 'thread') {
+      ctx.fillStyle = b.color + 'aa';
+      ctx.font = '500 9px Inter';
+      ctx.fillText('Klicken zum Zoomen \u2192', b.x, b.y + r * 0.35);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANIMATION LOOP
+// ═══════════════════════════════════════════════════════════════════════════
+function loop() {
+  updateParticles();
+  drawParticles();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INTERACTION
+// ═══════════════════════════════════════════════════════════════════════════
+const mainCanvas = document.getElementById('mainCanvas');
+const tooltip = document.getElementById('tooltip');
+
+mainCanvas.addEventListener('mousemove', e => {
+  const rect = mainCanvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  hovered = null;
+  for (const b of bubbles) {
+    if (Math.hypot(mx - b.x, my - b.y) < b.r) { hovered = b; break; }
+  }
+  mainCanvas.style.cursor = hovered ? 'pointer' : 'default';
+  if (hovered) {
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX + 14) + 'px';
+    tooltip.style.top = (e.clientY + 14) + 'px';
+    tooltip.innerHTML = `<div class="tt-title">${hovered.label}</div>
+      <div class="tt-row"><span>Typ</span><span>${hovered.type}</span></div>
+      <div class="tt-row"><span>Daten</span><span>${hovered.sub}</span></div>
+      ${hovered.type !== 'thread' ? '<div style="margin-top:6px;color:var(--accent);font-size:10px">Klicken zum Zoomen</div>' : '<div style="margin-top:6px;color:var(--accent3);font-size:10px">Klicken fuer Details</div>'}`;
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+
+mainCanvas.addEventListener('click', () => {
+  if (!hovered) return;
+  const b = hovered;
+  history.push({level, ctx: currentCtx});
+
+  if (b.type === 'platform') {
+    level = 'projects';
+    currentCtx = {platform: b.data};
+  } else if (b.type === 'project') {
+    level = 'threads';
+    currentCtx = {...currentCtx, project: b.data};
+  } else if (b.type === 'thread') {
+    showDetail(b.data);
+    history.pop(); // don't save thread click in history
+    return;
+  }
+
+  updateBreadcrumb();
+  updateSidePanel();
+  layoutBubbles(true);
+  document.getElementById('backBtn').classList.add('visible');
+});
+
+function goBack() {
+  if (!history.length) return;
+  const prev = history.pop();
+  level = prev.level;
+  currentCtx = prev.ctx;
+  updateBreadcrumb();
+  updateSidePanel();
+  layoutBubbles(true);
+  if (!history.length) document.getElementById('backBtn').classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BREADCRUMB
+// ═══════════════════════════════════════════════════════════════════════════
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  let h = `<div class="bc-item${level==='platforms'?' active':''}" onclick="navTo('platforms')">PRISM</div>`;
+  if (currentCtx?.platform) {
+    h += `<span class="bc-sep">&#9656;</span><div class="bc-item${level==='projects'?' active':''}" onclick="navTo('projects','${currentCtx.platform.id}')">${currentCtx.platform.name}</div>`;
+  }
+  if (currentCtx?.project) {
+    h += `<span class="bc-sep">&#9656;</span><div class="bc-item active">${currentCtx.project.name}</div>`;
+  }
+  bc.innerHTML = h;
+}
+
+function navTo(lvl, pid) {
+  history.push({level, ctx: currentCtx});
+  if (lvl === 'platforms') { level = 'platforms'; currentCtx = null; }
+  else if (lvl === 'projects') { level = 'projects'; currentCtx = {platform: DATA.platforms.find(p=>p.id===pid)}; }
+  updateBreadcrumb(); updateSidePanel(); layoutBubbles(true);
+  document.getElementById('backBtn').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SIDE PANEL
+// ═══════════════════════════════════════════════════════════════════════════
+function switchTab(btn, tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function updateSidePanel() {
+  const s = document.getElementById('headerStats');
+  if (level === 'platforms') {
+    s.innerHTML = `<div class="stat blue"><div class="val">${DATA.stats.threads}</div><div class="lbl">Threads</div></div><div class="stat green"><div class="val">${DATA.stats.answered}</div><div class="lbl">Beantwortet</div></div><div class="stat red"><div class="val">${DATA.stats.open}</div><div class="lbl">Offen</div></div><div class="stat amber"><div class="val">${DATA.stats.interrupts}</div><div class="lbl">Interrupts</div></div><div class="stat purple"><div class="val">${DATA.stats.rate}%</div><div class="lbl">Rate</div></div>`;
+  } else if (level === 'projects' && currentCtx?.platform) {
+    const ps = DATA.projects.filter(p=>p.platform===currentCtx.platform.id);
+    s.innerHTML = `<div class="stat blue"><div class="val">${ps.reduce((s,p)=>s+p.threads,0)}</div><div class="lbl">Threads</div></div><div class="stat green"><div class="val">${ps.length}</div><div class="lbl">Projekte</div></div>`;
+  } else if (level === 'threads' && currentCtx?.project) {
+    s.innerHTML = `<div class="stat blue"><div class="val">${currentCtx.project.threads}</div><div class="lbl">Threads</div></div>`;
+  }
+  updateOverview(); updateProjects(); updateThreads(); updateTimeline(); updateIntegrity();
+}
+
+function updateOverview() {
+  const g = document.getElementById('overviewGrid');
+  g.innerHTML = `<div class="ov-card"><div class="val" style="color:var(--accent)">${DATA.stats.threads}</div><div class="lbl">Gesamt</div></div><div class="ov-card"><div class="val" style="color:var(--accent2)">${DATA.stats.answered}</div><div class="lbl">Vollstaendig</div></div><div class="ov-card"><div class="val" style="color:var(--err)">${DATA.stats.open}</div><div class="lbl">Ohne Agent</div></div><div class="ov-card"><div class="val" style="color:var(--warn)">${DATA.stats.interrupts}</div><div class="lbl">Interrupts</div></div>`;
+  const bar = document.getElementById('integrityBar');
+  bar.innerHTML = `<div style="width:${(DATA.stats.answered/DATA.stats.threads*100).toFixed(1)}%;background:var(--accent2);border-radius:3px"></div><div style="width:${(DATA.stats.interrupts/DATA.stats.threads*100).toFixed(1)}%;background:var(--warn)"></div><div style="width:${(DATA.stats.open/DATA.stats.threads*100).toFixed(1)}%;background:var(--err)"></div>`;
+  document.getElementById('platformList').innerHTML = DATA.platforms.map(p => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:6px 8px;background:var(--bg3);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform=''" onclick="navTo('projects','${p.id}')"><div style="width:8px;height:8px;border-radius:50%;background:${p.color}"></div><span style="font-size:12px;font-weight:500;flex:1">${p.name}</span><span style="font-size:11px;color:var(--text3)">${p.count}</span></div>`).join('');
+}
+
+function updateProjects() {
+  const ps = currentCtx?.platform ? DATA.projects.filter(p=>p.platform===currentCtx.platform.id) : DATA.projects;
+  document.getElementById('projectList').innerHTML = ps.map(p => {
+    const top = Object.entries(p.cats||{}).sort((a,b)=>b[1]-a[1])[0];
+    const maxThreads = Math.max(...DATA.projects.map(p=>p.threads));
+    return `<div class="proj-card" onclick="clickProj('${p.name}')"><div class="proj-head"><span class="proj-name">${p.name}</span><span class="proj-pct" style="color:${p.color}">${p.threads}</span></div><div class="proj-bar"><div class="proj-bar-fill" style="width:${p.threads/maxThreads*100}%;background:${p.color}"></div></div><div class="proj-meta">${(p.platforms||[]).map(pl=>`<span class="proj-tag">${pl}</span>`).join('')}<span class="proj-tag">${top?top[0]:'N/A'}</span></div></div>`;
+  }).join('');
+}
+
+function updateThreads() {
+  let ts = [];
+  if (currentCtx?.project) ts = currentCtx.project.threadList;
+  else if (currentCtx?.platform) DATA.projects.filter(p=>p.platform===currentCtx.platform.id).forEach(p=>ts.push(...p.threadList));
+  else DATA.projects.forEach(p=>ts.push(...p.threadList));
+  document.getElementById('threadList').innerHTML = ts.map(t => {
+    const plat = DATA.platforms.find(p=>p.id===t.platform);
+    return `<div class="thread-card" onclick="clickThread('${t.id}')"><div class="thread-head"><span class="thread-title">${t.title}</span><span class="thread-platform" style="background:${plat?.color||'var(--bg3)'}22;color:${plat?.color||'var(--text3)'}">${t.platform}</span></div><div class="thread-meta"><span class="thread-tag">${t.cats?.join(', ')||''}</span><span>${t.date}</span>${t.commit?'<span class="commit-badge">\u2713 '+t.commit+'</span>':''}</div><div class="thread-snippet">${t.user}</div></div>`;
+  }).join('');
+}
+
+function updateTimeline() {
+  document.getElementById('timelineList').innerHTML = DATA.timeline.map(d => `<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:8px">${d.date} <span style="background:var(--bg3);border-radius:12px;padding:2px 10px;font-size:10px;color:var(--text2)">${d.commits.length} Commits</span></div>${d.commits.map(c=>`<div style="display:flex;gap:8px;padding:4px 0 4px 16px;border-left:2px solid var(--border)"><span class="mono" style="color:var(--accent2);font-size:11px">${c.hash}</span><span style="font-size:12px;color:var(--text2)">${c.msg}</span></div>`).join('')}</div>`).join('');
+}
+
+function updateIntegrity() {
+  document.getElementById('integrityIssues').innerHTML = `<div style="margin-bottom:12px;font-size:11px;font-weight:600;color:var(--err)">${DATA.noAgent.length} Threads ohne Agent-Antwort</div>${DATA.noAgent.map(t=>`<div style="background:var(--bg3);border-left:3px solid var(--err);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:10px 12px;margin-bottom:6px"><div style="font-size:12px;font-weight:500">${t.title}</div><div style="font-size:10px;color:var(--text3);margin-top:4px">${t.platform} \u00b7 ${t.date}</div><div style="font-size:11px;color:var(--text2);margin-top:4px">Input: "${t.user}"</div></div>`).join('')}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DETAIL
+// ═══════════════════════════════════════════════════════════════════════════
+function showDetail(t) {
+  document.getElementById('detailTitle').textContent = t.title;
+  document.getElementById('detailContent').innerHTML = `<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><span style="background:var(--bg3);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--accent3)">${t.platform}</span><span style="font-size:11px;color:var(--text3)">${t.date}</span>${(t.cats||[]).map(c=>`<span style="background:var(--bg3);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--accent)">${c}</span>`).join('')}${t.commit?`<span class="commit-badge">\u2713 ${t.commit}</span>`:''}</div><div class="msg-card"><div class="msg-role user">User Input</div><div class="msg-content">${t.user}</div></div><div class="msg-card"><div class="msg-role assistant">Agent Antwort</div><div class="msg-content">${t.agent}</div></div>`;
+  document.getElementById('detailPanel').classList.add('visible');
+}
+
+function closeDetail() { document.getElementById('detailPanel').classList.remove('visible'); }
+
+function clickProj(name) {
+  const p = DATA.projects.find(x=>x.name===name);
+  if (!p) return;
+  history.push({level, ctx: currentCtx});
+  level = 'threads'; currentCtx = {...currentCtx, project: p};
+  updateBreadcrumb(); updateSidePanel(); layoutBubbles(true);
+  document.getElementById('backBtn').classList.add('visible');
+}
+
+function clickThread(id) {
+  for (const p of DATA.projects) {
+    const t = p.threadList.find(x=>x.id===id);
+    if (t) { showDetail(t); return; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
+function resize() {
+  const rect = document.querySelector('.canvas-area').getBoundingClientRect();
+  W = rect.width; H = rect.height;
+  const dpr = window.devicePixelRatio || 1;
+  [document.getElementById('bgCanvas'), mainCanvas].forEach(c => {
+    c.width = W * dpr; c.height = H * dpr;
+    c.style.width = W + 'px'; c.style.height = H + 'px';
+  });
+  bgCtx = document.getElementById('bgCanvas').getContext('2d');
+  ctx = mainCanvas.getContext('2d');
+  bgCtx.scale(dpr, dpr);
+  ctx.scale(dpr, dpr);
+  initParticles();
+  layoutBubbles();
+}
+
+window.addEventListener('resize', resize);
+resize();
+updateBreadcrumb();
+updateSidePanel();
+loop();
+</script>
+</body>
+</html>
