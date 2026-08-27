@@ -85,21 +85,22 @@ def generate_dashboard_data(
         for cat in thread.categories:
             proj['categories'][cat] = proj['categories'].get(cat, 0) + 1
         
-        # Add thread summary (max 10 per project)
-        if len(proj['threadList']) < 10:
-            user_input = thread.user_input[:200] if thread.user_input else ''
-            agent_reaction = thread.agent_reaction[:200] if thread.agent_reaction else ''
-            
-            proj['threadList'].append({
-                'id': thread.id,
-                'title': thread.title[:80],
-                'platform': thread.platform,
-                'date': thread.date,
-                'cats': thread.categories[:5],
-                'user': user_input,
-                'agent': agent_reaction,
-                'commit': thread.git_commits[0]['hash'] if thread.git_commits else None,
-            })
+        # Add thread summary (ALLE Threads, keine Kuerzung)
+        user_input = thread.user_input if thread.user_input else ''
+        agent_reaction = thread.agent_reaction if thread.agent_reaction else ''
+        
+        proj['threadList'].append({
+            'id': thread.id,
+            'title': thread.title,
+            'platform': thread.platform,
+            'date': thread.date,
+            'cats': thread.categories,
+            'user': user_input,
+            'agent': agent_reaction,
+            'commit': thread.git_commits[0]['hash'] if thread.git_commits else None,
+            'msgCount': thread.message_count,
+            'hasAgent': thread.has_agent_response,
+        })
     
     # Convert sets to lists and assign colors
     projects = []
@@ -107,9 +108,7 @@ def generate_dashboard_data(
     for i, (name, data) in enumerate(sorted(projects_dict.items(), key=lambda x: -x[1]['threads'])):
         data['platforms'] = list(data['platforms'])
         data['color'] = proj_colors[i % len(proj_colors)]
-        projects.append(data)
-    
-    # Timeline (group by date)
+        projects.append(data)    # Timeline (group by date, ALLE Commits)
     timeline_dict: dict[str, list] = {}
     for thread in all_threads:
         if thread.git_commits:
@@ -119,13 +118,13 @@ def generate_dashboard_data(
                     if date not in timeline_dict:
                         timeline_dict[date] = []
                     timeline_dict[date].append({
-                        'hash': commit.get('hash', '?')[:7],
-                        'msg': commit.get('message', '?')[:60],
+                        'hash': commit.get('hash', '?'),
+                        'msg': commit.get('message', '?'),
                         'proj': thread.project or '?',
                     })
-    
+
     timeline = []
-    for date in sorted(timeline_dict.keys(), reverse=True)[:10]:
+    for date in sorted(timeline_dict.keys(), reverse=True):
         commits = timeline_dict[date]
         # Deduplicate by hash
         seen = set()
@@ -136,20 +135,21 @@ def generate_dashboard_data(
                 unique_commits.append(c)
         timeline.append({
             'date': date,
-            'commits': unique_commits[:10],
-        })
-    
-    # No-agent threads
+            'commits': unique_commits,
+        })    # No-agent threads (ALLE, sortiert nach Datum)
     no_agent = []
     for thread in all_threads:
         if not thread.has_agent_response:
             no_agent.append({
-                'title': thread.title[:60],
+                'title': thread.title,
                 'platform': thread.platform,
                 'date': thread.date,
-                'user': (thread.user_input or '')[:100],
+                'user': thread.user_input or '',
+                'cats': thread.categories,
             })
-    
+    # Sort by date descending
+    no_agent.sort(key=lambda x: x.get('date', ''), reverse=True)
+
     return {
         'stats': {
             'threads': total,
@@ -161,7 +161,7 @@ def generate_dashboard_data(
         'platforms': platforms,
         'projects': projects,
         'timeline': timeline,
-        'noAgent': no_agent[:20],
+        'noAgent': no_agent,
     }
 
 
