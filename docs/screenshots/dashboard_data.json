@@ -59,7 +59,32 @@
   "projects": [
     {
       "name": "snip-war",
-      "threads": 109,
+      "threads": 128,
+      "platforms": [
+        "gemini_desktop",
+        "freebuff",
+        "kilo_code"
+      ],
+      "categories": {
+        "DOKU": 57,
+        "ARCHITEKTUR": 37,
+        "CONFIG": 39,
+        "BUG": 44,
+        "QA_TEST": 66,
+        "FEATURE": 26,
+        "GAMEPLAY": 46,
+        "COST": 20,
+        "UNCATEGORIZED": 18,
+        "REFACTOR": 21,
+        "HEADLESS_VERBOT": 24,
+        "PERFORMANCE": 31,
+        "MCP_ADDON": 40,
+        "SUCHSYSTEM": 27,
+        "SERVER_START": 4,
+        "REMOTE_CONTROL": 7,
+        "ENTKOPPELUNG": 11,
+        "GIT": 22
+      },
       "threadList": [
         {
           "id": "809fdc23-9b5",
@@ -114,7 +139,7 @@
             "CONFIG"
           ],
           "user": "Du bist gamedesiger ud möchtes over engeneering Vorbeueugen und Godo engine Tweks und  stolpersteine direkt beachten du bekommst einen plan und liest ihn readd only gegen den code un der godot enginde",
-          "agent": "Verstanden! Ich übernehme die Rolle als **Game-Design-Review-Partner** mit Fokus auf:  - **Anti-Over-Engineering** – Prüfe ob simples Design ausreicht - **Godot-Engine-Pitfalls** – Bekannte Stolperste",
+          "agent": "Verstanden! Ich übernehme die Rolle als **Game-Design-Review-Partner** mit Fokus auf:\n\n- **Anti-Over-Engineering** – Prüfe ob simples Design ausreicht\n- **Godot-Engine-Pitfalls** – Bekannte Stolperste",
           "commit": null
         },
         {
@@ -128,8 +153,8 @@
             "ARCHITEKTUR",
             "CONFIG"
           ],
-          "user": "du bist prüfer Deine aufgabe ist red oly  1. System archieekur sudieren, verstehen wo die ziele sind,Systeme und kusall einflüsse studieren 2. Wen ich dir inpu gebe IMMER READ ONLY prüfen ob ichblide ",
-          "agent": "Verstanden! Hier meine Rolle in eigenen Worten:  **Ich bin Buffy – der Prüfer (Reviewer).**  1. **Architektur verstehen:** Ich studiere zuerst das System, verstehe die Ziele, Komponenten und causalen ",
+          "user": "du bist prüfer Deine aufgabe ist red oly \n1. System archieekur sudieren, verstehen wo die ziele sind,Systeme und kusall einflüsse studieren\n2. Wen ich dir inpu gebe IMMER READ ONLY prüfen ob ichblide ",
+          "agent": "Verstanden! Hier meine Rolle in eigenen Worten:\n\n**Ich bin Buffy – der Prüfer (Reviewer).**\n\n1. **Architektur verstehen:** Ich studiere zuerst das System, verstehe die Ziele, Komponenten und causalen ",
           "commit": null
         },
         {
@@ -145,7 +170,7 @@
             "COST"
           ],
           "user": "/review",
-          "agent": "Now I have a thorough picture. Let me trace the two concrete defects I\\'ll fix and verify the rest against the actual code before editing.",
+          "agent": "Now I have a thorough picture. Let me trace the two concrete defects I'll fix and verify the rest against the actual code before editing.",
           "commit": null
         },
         {
@@ -157,7 +182,7 @@
             "ARCHITEKTUR"
           ],
           "user": "Du bis read only agent und ntwortest immer mit refereenzen und Godot pitfalls, Prüfe die architektur und welche systeme sich ggensitig blockieren und \"fllback\" harcode ist",
-          "agent": "Hier ist die Architektur-Analyse:  ---  ## 🔴 Architektur-Blockaden & Cross-Cutting Concerns  ### 1. \\`GameState\\` ←→ \\`Planet\\` circular coupling \\`Planet.get_faction()\\` ruft \\`GameState.faction_of()\\` auf, ",
+          "agent": "Hier ist die Architektur-Analyse:\n\n---\n\n## 🔴 Architektur-Blockaden & Cross-Cutting Concerns\n\n### 1. `GameState` ←→ `Planet` circular coupling\n`Planet.get_faction()` ruft `GameState.faction_of()` auf, ",
           "commit": null
         },
         {
@@ -197,32 +222,33 @@
           "commit": null
         }
       ],
-      "color": "#10b981",
-      "platform": "kilo_code",
-      "cats": {
-        "DOKU": 40,
-        "ARCHITEKTUR": 24,
-        "CONFIG": 21,
-        "BUG": 31,
-        "QA_TEST": 48,
-        "FEATURE": 11,
-        "GAMEPLAY": 38,
-        "COST": 8,
-        "UNCATEGORIZED": 18,
-        "REFACTOR": 10,
-        "HEADLESS_VERBOT": 12,
-        "PERFORMANCE": 19,
-        "MCP_ADDON": 36,
-        "SUCHSYSTEM": 13,
-        "SERVER_START": 2,
-        "REMOTE_CONTROL": 5,
-        "ENTKOPPELUNG": 5,
-        "GIT": 6
-      }
+      "color": "#10b981"
     },
     {
       "name": "SyxBridge_Live",
-      "threads": 90,
+      "threads": 93,
+      "platforms": [
+        "gemini_desktop",
+        "kilo_code",
+        "gemini_cli"
+      ],
+      "categories": {
+        "UNCATEGORIZED": 40,
+        "PERFORMANCE": 3,
+        "GAMEPLAY": 9,
+        "QA_TEST": 16,
+        "CONFIG": 11,
+        "DOKU": 28,
+        "MCP_ADDON": 9,
+        "BUG": 16,
+        "FEATURE": 6,
+        "COST": 3,
+        "REFACTOR": 5,
+        "GIT": 7,
+        "ARCHITEKTUR": 12,
+        "SERVER_START": 2,
+        "SUCHSYSTEM": 4
+      },
       "threadList": [
         {
           "id": "gemini_0",
@@ -262,7 +288,7 @@
         },
         {
           "id": "gemini_9",
-          "title": " Thought for 1m 22s   The user is asking me to resume the la",
+          "title": " Thought for 1m 22s\n  The user is asking me to resume the la",
           "platform": "gemini_cli",
           "date": "2026-07-01 21:57",
           "cats": [
@@ -271,13 +297,13 @@
             "PERFORMANCE",
             "CONFIG"
           ],
-          "user": "Thought for 1m 22s   The user is asking me to resume the last task again. I\\'ve already read the full requirements and the current file.   Now I need to write the complete rebuilt index.html. Let me cr",
+          "user": "Thought for 1m 22s\n  The user is asking me to resume the last task again. I've already read the full requirements and the current file.\n  Now I need to write the complete rebuilt index.html. Let me cr",
           "agent": "",
           "commit": null
         },
         {
           "id": "gemini_10",
-          "title": " Thought for 1m 22s   The user is asking me to resume the la",
+          "title": " Thought for 1m 22s\n  The user is asking me to resume the la",
           "platform": "gemini_cli",
           "date": "2026-07-01 21:59",
           "cats": [
@@ -286,7 +312,7 @@
             "PERFORMANCE",
             "CONFIG"
           ],
-          "user": "Thought for 1m 22s   The user is asking me to resume the last task again. I\\'ve already read the full requirements and the current file.   Now I need to write the complete rebuilt index.html. Let me cr",
+          "user": "Thought for 1m 22s\n  The user is asking me to resume the last task again. I've already read the full requirements and the current file.\n  Now I need to write the complete rebuilt index.html. Let me cr",
           "agent": "",
           "commit": null
         },
@@ -351,29 +377,32 @@
           "commit": null
         }
       ],
-      "color": "#3b82f6",
-      "platform": "kilo_code",
-      "cats": {
-        "UNCATEGORIZED": 40,
-        "PERFORMANCE": 3,
-        "GAMEPLAY": 6,
-        "QA_TEST": 14,
-        "CONFIG": 9,
-        "DOKU": 28,
-        "MCP_ADDON": 9,
-        "BUG": 15,
-        "FEATURE": 6,
-        "COST": 2,
-        "REFACTOR": 3,
-        "ARCHITEKTUR": 12,
-        "GIT": 5,
-        "SERVER_START": 2,
-        "SUCHSYSTEM": 4
-      }
+      "color": "#3b82f6"
     },
     {
       "name": "RhytmusIsaPatter",
       "threads": 49,
+      "platforms": [
+        "claude_code",
+        "kilo_code",
+        "codex"
+      ],
+      "categories": {
+        "UNCATEGORIZED": 18,
+        "DOKU": 13,
+        "CONFIG": 7,
+        "GAMEPLAY": 8,
+        "SERVER_START": 1,
+        "COST": 8,
+        "GIT": 6,
+        "QA_TEST": 6,
+        "BUG": 4,
+        "SUCHSYSTEM": 3,
+        "REFACTOR": 1,
+        "MCP_ADDON": 1,
+        "ARCHITEKTUR": 1,
+        "PERFORMANCE": 1
+      },
       "threadList": [
         {
           "id": "942c26ea-989",
@@ -496,163 +525,24 @@
           "commit": null
         }
       ],
-      "color": "#8b5cf6",
-      "platform": "claude_code",
-      "cats": {
-        "UNCATEGORIZED": 18,
-        "DOKU": 13,
-        "CONFIG": 7,
-        "GAMEPLAY": 8,
-        "SERVER_START": 1,
-        "COST": 8,
-        "GIT": 6,
-        "QA_TEST": 6,
-        "BUG": 4,
-        "SUCHSYSTEM": 3,
-        "REFACTOR": 1,
-        "MCP_ADDON": 1,
-        "ARCHITEKTUR": 1,
-        "PERFORMANCE": 1
-      }
-    },
-    {
-      "name": "unknown",
-      "threads": 25,
-      "threadList": [
-        {
-          "id": "bf269eb3-980",
-          "title": "Git Bash Performance Issues",
-          "platform": "freebuff",
-          "date": "2026-08-22 23:08",
-          "cats": [
-            "GIT",
-            "PERFORMANCE"
-          ],
-          "user": "Prüfe ob Git bash probleme hat da as meines wissens nach eine arbeitsumgebung isst un ich as gefühl habe das bash aktuell seh \"langsam\" arbeite",
-          "agent": "Ich schau mir mal den aktuellen Zustand an — Git-Status, Systeminfos und Bash-Performance.",
-          "commit": null
-        },
-        {
-          "id": "5eb2f004-7f9",
-          "title": "CLI- und Profilverwaltung prüfen",
-          "platform": "freebuff",
-          "date": "2026-08-22 23:11",
-          "cats": [
-            "COST"
-          ],
-          "user": "Prüfe welche cli global installiert sind und Welche profile aktiviert ich will Vereinheitlichen",
-          "agent": "Hier ist dein aktueller Stand:  ## 🖥️ Global installierte CLI-Coding-Tools  | CLI | Version | Installer | |-----|---------|-----------| | **claude** (Claude Code) | 2.1.205 | npm global | | **freebuff",
-          "commit": null
-        },
-        {
-          "id": "3902da2b-91a",
-          "title": "Erklärung von Commit Layer und Atomarität",
-          "platform": "freebuff",
-          "date": "2026-08-26 21:06",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "suche syxbridge,commit layer und erkläre mir wie er funktioniert atomar",
-          "agent": "Ich habe die Referenzen gefunden. Lass mich die relevanten Dateien lesen, um die Architektur zu verstehen.",
-          "commit": null
-        },
-        {
-          "id": "gemini_desktop_0",
-          "title": "b$7343b966-4069-49cf-aad4-960227772c75",
-          "platform": "gemini_desktop",
-          "date": "?",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "",
-          "agent": "",
-          "commit": null
-        },
-        {
-          "id": "gemini_desktop_1",
-          "title": "b$cb24502d-60ac-44a4-bb6c-e0089848175d",
-          "platform": "gemini_desktop",
-          "date": "?",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "",
-          "agent": "",
-          "commit": null
-        },
-        {
-          "id": "gemini_desktop_2",
-          "title": "b$605810c7-a5eb-49a0-b471-22c2cd94c402",
-          "platform": "gemini_desktop",
-          "date": "?",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "",
-          "agent": "",
-          "commit": null
-        },
-        {
-          "id": "gemini_desktop_3",
-          "title": "b$df6aafad-030c-4c79-821a-ef7ab358f889",
-          "platform": "gemini_desktop",
-          "date": "?",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "",
-          "agent": "",
-          "commit": null
-        },
-        {
-          "id": "gemini_desktop_4",
-          "title": "b$a1c5fcc0-08a9-4f76-b9ad-4d1100c77901",
-          "platform": "gemini_desktop",
-          "date": "?",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "",
-          "agent": "",
-          "commit": null
-        },
-        {
-          "id": "gemini_desktop_5",
-          "title": "b$a40ecc2f-9854-440c-a7be-85c20e45c4df",
-          "platform": "gemini_desktop",
-          "date": "?",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "",
-          "agent": "",
-          "commit": null
-        },
-        {
-          "id": "gemini_desktop_6",
-          "title": "b$d96e435a-e510-40f9-82cd-4e4d8b198c64",
-          "platform": "gemini_desktop",
-          "date": "?",
-          "cats": [
-            "UNCATEGORIZED"
-          ],
-          "user": "",
-          "agent": "",
-          "commit": null
-        }
-      ],
-      "color": "#f59e0b",
-      "platform": "gemini_desktop",
-      "cats": {
-        "GIT": 1,
-        "PERFORMANCE": 1,
-        "COST": 1,
-        "UNCATEGORIZED": 23
-      }
+      "color": "#8b5cf6"
     },
     {
       "name": "Vannon",
       "threads": 22,
+      "platforms": [
+        "kilo_code",
+        "gemini_cli",
+        "codex"
+      ],
+      "categories": {
+        "UNCATEGORIZED": 13,
+        "GAMEPLAY": 3,
+        "QA_TEST": 6,
+        "GIT": 3,
+        "DOKU": 4,
+        "CONFIG": 5
+      },
       "threadList": [
         {
           "id": "gemini_2",
@@ -740,25 +630,25 @@
         },
         {
           "id": "019f3a8c-1ea",
-          "title": "C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "title": "C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "platform": "codex",
           "date": "2026-07-07 03:08",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "user": "C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "agent": "",
           "commit": null
         },
         {
           "id": "019f3a8f-f94",
-          "title": "C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter Workspace",
+          "title": "C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter Workspace",
           "platform": "codex",
           "date": "2026-07-07 03:12",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter Workspace",
+          "user": "C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter Workspace",
           "agent": "",
           "commit": null
         },
@@ -777,42 +667,40 @@
           "commit": null
         }
       ],
-      "color": "#ef4444",
-      "platform": "kilo_code",
-      "cats": {
-        "UNCATEGORIZED": 13,
-        "GAMEPLAY": 3,
-        "QA_TEST": 6,
-        "GIT": 3,
-        "DOKU": 4,
-        "CONFIG": 5
-      }
+      "color": "#f59e0b"
     },
     {
       "name": "Neuer Ordner",
       "threads": 9,
+      "platforms": [
+        "claude_code"
+      ],
+      "categories": {
+        "UNCATEGORIZED": 7,
+        "DOKU": 2
+      },
       "threadList": [
         {
           "id": "b59105b1-e3a",
-          "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "platform": "claude_code",
           "date": "2026-07-07 12:34",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "agent": "",
           "commit": null
         },
         {
           "id": "9642613c-d0c",
-          "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "platform": "claude_code",
           "date": "2026-07-07 12:40",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "agent": "",
           "commit": null
         },
@@ -842,25 +730,25 @@
         },
         {
           "id": "74b0440f-9f9",
-          "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "platform": "claude_code",
           "date": "2026-07-07 14:25",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "agent": "",
           "commit": null
         },
         {
           "id": "14728578-e39",
-          "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "platform": "claude_code",
           "date": "2026-07-07 15:04",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "agent": "",
           "commit": null
         },
@@ -890,27 +778,37 @@
         },
         {
           "id": "da0e7abc-28a",
-          "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "platform": "claude_code",
           "date": "2026-07-07 15:24",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+          "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
           "agent": "",
           "commit": null
         }
       ],
-      "color": "#06b6d4",
-      "platform": "claude_code",
-      "cats": {
-        "UNCATEGORIZED": 7,
-        "DOKU": 2
-      }
+      "color": "#ef4444"
     },
     {
       "name": "System32",
       "threads": 9,
+      "platforms": [
+        "claude_code",
+        "kilo_code",
+        "codex"
+      ],
+      "categories": {
+        "BUG": 2,
+        "PERFORMANCE": 1,
+        "UNCATEGORIZED": 2,
+        "DOKU": 5,
+        "GAMEPLAY": 1,
+        "GIT": 1,
+        "REFACTOR": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "c59f1452-80b",
@@ -951,49 +849,49 @@
         },
         {
           "id": "afc083f5-e9a",
-          "title": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\\\",
+          "title": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\",
           "platform": "claude_code",
           "date": "2026-07-09 02:13",
           "cats": [
             "DOKU"
           ],
-          "user": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump /deep-research /batch",
+          "user": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump /deep-research /batch",
           "agent": "",
           "commit": null
         },
         {
           "id": "1529ff85-e1c",
-          "title": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\\\",
+          "title": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\",
           "platform": "claude_code",
           "date": "2026-07-09 02:16",
           "cats": [
             "DOKU"
           ],
-          "user": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump /batch",
+          "user": "❯  Ultracode fan out subagents /effort max /dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump /batch",
           "agent": "",
           "commit": null
         },
         {
           "id": "14fd6236-5bc",
-          "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\Neuer Ordner (2)",
+          "title": "/cd C:\\Users\\Vannon\\Desktop\\Neuer Ordner (2)",
           "platform": "claude_code",
           "date": "2026-07-09 02:21",
           "cats": [
             "DOKU"
           ],
-          "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\Neuer Ordner (2)",
+          "user": "/cd C:\\Users\\Vannon\\Desktop\\Neuer Ordner (2)",
           "agent": "",
           "commit": null
         },
         {
           "id": "7d9f3ee8-1c7",
-          "title": "C:\\\\Users\\\\Vannon\\\\.claude ────────────────────────────────────",
+          "title": "C:\\Users\\Vannon\\.claude ────────────────────────────────────",
           "platform": "claude_code",
           "date": "2026-07-09 02:49",
           "cats": [
             "UNCATEGORIZED"
           ],
-          "user": "C:\\\\Users\\\\Vannon\\\\.claude ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── ❯ /konzept skill fehlt in Opt in auswahl",
+          "user": "C:\\Users\\Vannon\\.claude ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n❯ /konzept skill fehlt in Opt in auswahl",
           "agent": "",
           "commit": null
         },
@@ -1021,73 +919,70 @@
             "REFACTOR",
             "CONFIG"
           ],
-          "user": "1. _moodDrift Markov-Sackgassen: 31 Transition-Einträge, aber einige haben nur 1-2 Candidates. \\'euphoric-präzise\\': [\\'triumphant\\', \\'warm\\']   — 2 Optionen, ok. Aber wenn ein Mood nur 1 Candidate hat, wi",
+          "user": "1. _moodDrift Markov-Sackgassen: 31 Transition-Einträge, aber einige haben nur 1-2 Candidates. 'euphoric-präzise': ['triumphant', 'warm']\n  — 2 Optionen, ok. Aber wenn ein Mood nur 1 Candidate hat, wi",
           "agent": "Ich sehe eine Liste von 9 Bugs/Problemen. Bevor ich loslege, brauche ich Kontext zum Codebase.",
           "commit": null
         }
       ],
-      "color": "#ec4899",
-      "platform": "claude_code",
-      "cats": {
-        "BUG": 2,
-        "PERFORMANCE": 1,
-        "UNCATEGORIZED": 2,
-        "DOKU": 5,
-        "GAMEPLAY": 1,
-        "GIT": 1,
-        "REFACTOR": 1,
-        "CONFIG": 1
-      }
+      "color": "#06b6d4"
     },
     {
       "name": "Neuer Ordner (3)",
       "threads": 7,
+      "platforms": [
+        "claude_code"
+      ],
+      "categories": {
+        "DOKU": 6,
+        "SERVER_START": 1,
+        "GAMEPLAY": 1
+      },
       "threadList": [
         {
           "id": "09be60f0-b63",
-          "title": "❯ /dump-analyse /konzept /memory /agents C:\\\\Users\\\\Vannon\\\\Doc",
+          "title": "❯ /dump-analyse /konzept /memory /agents C:\\Users\\Vannon\\Doc",
           "platform": "claude_code",
           "date": "2026-07-09 04:47",
           "cats": [
             "DOKU"
           ],
-          "user": "❯ /dump-analyse /konzept /memory /agents C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "user": "❯ /dump-analyse /konzept /memory /agents C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "agent": "",
           "commit": null
         },
         {
           "id": "5b47fc70-577",
-          "title": "❯ /dump-analyse /konzept /memory /agents C:\\\\Users\\\\Vannon\\\\Doc",
+          "title": "❯ /dump-analyse /konzept /memory /agents C:\\Users\\Vannon\\Doc",
           "platform": "claude_code",
           "date": "2026-07-09 05:11",
           "cats": [
             "DOKU"
           ],
-          "user": "❯ /dump-analyse /konzept /memory /agents C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "user": "❯ /dump-analyse /konzept /memory /agents C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "agent": "",
           "commit": null
         },
         {
           "id": "5f43bd1a-484",
-          "title": "/dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "title": "/dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "platform": "claude_code",
           "date": "2026-07-09 05:14",
           "cats": [
             "DOKU"
           ],
-          "user": "/dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "user": "/dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "agent": "",
           "commit": null
         },
         {
           "id": "06a2ac84-b4c",
-          "title": "/dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "title": "/dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "platform": "claude_code",
           "date": "2026-07-09 05:18",
           "cats": [
             "DOKU"
           ],
-          "user": "/dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "user": "/dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "agent": "",
           "commit": null
         },
@@ -1099,47 +994,106 @@
           "cats": [
             "SERVER_START"
           ],
-          "user": "[Environment]::SetEnvironmentVariable(\"ANTHROPIC_BASE_URL\", \"http://localhost:8082\", \"User\") [Environment]::SetEnvironmentVariable(\"ANTHROPIC_AUTH_TOKEN\", \"freecc\", \"User\") [Environment]::SetEnvironme",
+          "user": "[Environment]::SetEnvironmentVariable(\"ANTHROPIC_BASE_URL\", \"http://localhost:8082\", \"User\")\n[Environment]::SetEnvironmentVariable(\"ANTHROPIC_AUTH_TOKEN\", \"freecc\", \"User\")\n[Environment]::SetEnvironme",
           "agent": "",
           "commit": null
         },
         {
           "id": "ebe0d067-4f0",
-          "title": "/dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "title": "/dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "platform": "claude_code",
           "date": "2026-07-09 05:47",
           "cats": [
             "DOKU"
           ],
-          "user": "/dump-analyse C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "user": "/dump-analyse C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "agent": "",
           "commit": null
         },
         {
           "id": "0938e5cc-84c",
-          "title": "C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "title": "C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "platform": "claude_code",
           "date": "2026-07-09 05:56",
           "cats": [
             "GAMEPLAY",
             "DOKU"
           ],
-          "user": "C:\\\\Users\\\\Vannon\\\\Documents\\\\Downloads\\\\Dump",
+          "user": "C:\\Users\\Vannon\\Documents\\Downloads\\Dump",
           "agent": "",
           "commit": null
         }
       ],
-      "color": "#f97316",
-      "platform": "claude_code",
-      "cats": {
-        "DOKU": 6,
-        "SERVER_START": 1,
-        "GAMEPLAY": 1
-      }
+      "color": "#ec4899"
+    },
+    {
+      "name": "unknown",
+      "threads": 3,
+      "platforms": [
+        "freebuff"
+      ],
+      "categories": {
+        "GIT": 1,
+        "PERFORMANCE": 1,
+        "COST": 1,
+        "UNCATEGORIZED": 1
+      },
+      "threadList": [
+        {
+          "id": "bf269eb3-980",
+          "title": "Git Bash Performance Issues",
+          "platform": "freebuff",
+          "date": "2026-08-22 23:08",
+          "cats": [
+            "GIT",
+            "PERFORMANCE"
+          ],
+          "user": "Prüfe ob Git bash probleme hat da as meines wissens nach eine arbeitsumgebung isst un ich as gefühl habe das bash aktuell seh \"langsam\" arbeite",
+          "agent": "Ich schau mir mal den aktuellen Zustand an — Git-Status, Systeminfos und Bash-Performance.",
+          "commit": null
+        },
+        {
+          "id": "5eb2f004-7f9",
+          "title": "CLI- und Profilverwaltung prüfen",
+          "platform": "freebuff",
+          "date": "2026-08-22 23:11",
+          "cats": [
+            "COST"
+          ],
+          "user": "Prüfe welche cli global installiert sind und Welche profile aktiviert ich will Vereinheitlichen",
+          "agent": "Hier ist dein aktueller Stand:\n\n## 🖥️ Global installierte CLI-Coding-Tools\n\n| CLI | Version | Installer |\n|-----|---------|-----------|\n| **claude** (Claude Code) | 2.1.205 | npm global |\n| **freebuff",
+          "commit": null
+        },
+        {
+          "id": "3902da2b-91a",
+          "title": "Erklärung von Commit Layer und Atomarität",
+          "platform": "freebuff",
+          "date": "2026-08-26 21:06",
+          "cats": [
+            "UNCATEGORIZED"
+          ],
+          "user": "suche syxbridge,commit layer und erkläre mir wie er funktioniert atomar",
+          "agent": "Ich habe die Referenzen gefunden. Lass mich die relevanten Dateien lesen, um die Architektur zu verstehen.",
+          "commit": null
+        }
+      ],
+      "color": "#f97316"
     },
     {
       "name": "snippet-empire",
       "threads": 3,
+      "platforms": [
+        "freebuff"
+      ],
+      "categories": {
+        "GAMEPLAY": 2,
+        "BUG": 1,
+        "DOKU": 1,
+        "FEATURE": 1,
+        "SERVER_START": 1,
+        "REFACTOR": 1,
+        "UNCATEGORIZED": 1
+      },
       "threadList": [
         {
           "id": "3b2cfdc2-315",
@@ -1166,7 +1120,7 @@
             "GAMEPLAY",
             "REFACTOR"
           ],
-          "user": "MVP Ship System Rewrite — Umsetzungsplan Überblick Kernidee: Das alte Einweg-System (Scout fliegt → scannt → stirbt; Worker fliegen → zählen → Tick zahlt aus) wird durch ein persistentes Einzelschiff-",
+          "user": "MVP Ship System Rewrite — Umsetzungsplan\nÜberblick\nKernidee: Das alte Einweg-System (Scout fliegt → scannt → stirbt; Worker fliegen → zählen → Tick zahlt aus) wird durch ein persistentes Einzelschiff-",
           "agent": "",
           "commit": null
         },
@@ -1179,25 +1133,21 @@
             "UNCATEGORIZED"
           ],
           "user": "/review",
-          "agent": "⚠️ deepseek/deepseek-v4-pro isn\\'t available right now (9am ET-5pm PT every day).",
+          "agent": "⚠️ deepseek/deepseek-v4-pro isn't available right now (9am ET-5pm PT every day).",
           "commit": null
         }
       ],
-      "color": "#10b981",
-      "platform": "freebuff",
-      "cats": {
-        "GAMEPLAY": 2,
-        "BUG": 1,
-        "DOKU": 1,
-        "FEATURE": 1,
-        "SERVER_START": 1,
-        "REFACTOR": 1,
-        "UNCATEGORIZED": 1
-      }
+      "color": "#10b981"
     },
     {
       "name": "Neuer Ordner (2)",
       "threads": 1,
+      "platforms": [
+        "claude_code"
+      ],
+      "categories": {
+        "UNCATEGORIZED": 1
+      },
       "threadList": [
         {
           "id": "fa6e482b-16b",
@@ -1212,15 +1162,23 @@
           "commit": null
         }
       ],
-      "color": "#3b82f6",
-      "platform": "claude_code",
-      "cats": {
-        "UNCATEGORIZED": 1
-      }
+      "color": "#3b82f6"
     },
     {
       "name": "user_inputs_parser",
       "threads": 1,
+      "platforms": [
+        "freebuff"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "ENTKOPPELUNG": 1,
+        "BUG": 1,
+        "DOKU": 1,
+        "GIT": 1,
+        "ARCHITEKTUR": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "37b5fe00-39f",
@@ -1239,21 +1197,17 @@
           "commit": null
         }
       ],
-      "color": "#8b5cf6",
-      "platform": "freebuff",
-      "cats": {
-        "MCP_ADDON": 1,
-        "ENTKOPPELUNG": 1,
-        "BUG": 1,
-        "DOKU": 1,
-        "GIT": 1,
-        "ARCHITEKTUR": 1,
-        "CONFIG": 1
-      }
+      "color": "#8b5cf6"
     },
     {
       "name": "cursor",
       "threads": 1,
+      "platforms": [
+        "cursor"
+      ],
+      "categories": {
+        "UNCATEGORIZED": 1
+      },
       "threadList": [
         {
           "id": "cursor_0",
@@ -1268,15 +1222,27 @@
           "commit": null
         }
       ],
-      "color": "#f59e0b",
-      "platform": "cursor",
-      "cats": {
-        "UNCATEGORIZED": 1
-      }
+      "color": "#f59e0b"
     },
     {
       "name": "[/init] The user wants you to UPDATE the…",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "HEADLESS_VERBOT": 1,
+        "GAMEPLAY": 1,
+        "QA_TEST": 1,
+        "BUG": 1,
+        "DOKU": 1,
+        "FEATURE": 1,
+        "COST": 1,
+        "GIT": 1,
+        "ARCHITEKTUR": 1,
+        "PERFORMANCE": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260823_022",
@@ -1290,30 +1256,24 @@
             "BUG",
             "DOKU"
           ],
-          "user": "[/init] The user wants you to UPDATE the existing AGENTS.md project-instructions file for the project at: C:\\\\Users\\\\Vannon\\\\Documents\\\\snippet-empire\\\\snip-war  AGENTS.md is the instruction file coding ag",
+          "user": "[/init] The user wants you to UPDATE the existing AGENTS.md project-instructions file for the project at: C:\\Users\\Vannon\\Documents\\snippet-empire\\snip-war\n\nAGENTS.md is the instruction file coding ag",
           "agent": "Now I have a comprehensive understanding of the project. Let me create the updated AGENTS.md file, preserving the existing content and making minimal surgical updates where needed.",
           "commit": null
         }
       ],
-      "color": "#ef4444",
-      "platform": "hermes",
-      "cats": {
-        "HEADLESS_VERBOT": 1,
-        "GAMEPLAY": 1,
-        "QA_TEST": 1,
-        "BUG": 1,
-        "DOKU": 1,
-        "FEATURE": 1,
-        "COST": 1,
-        "GIT": 1,
-        "ARCHITEKTUR": 1,
-        "PERFORMANCE": 1,
-        "CONFIG": 1
-      }
+      "color": "#ef4444"
     },
     {
       "name": "welches folder is aktiv",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "QA_TEST": 1,
+        "SERVER_START": 1
+      },
       "threadList": [
         {
           "id": "20260823_031",
@@ -1326,21 +1286,26 @@
             "SERVER_START"
           ],
           "user": "welches folder is aktiv",
-          "agent": "Das aktuelle Arbeitsverzeichnis ist: **C:\\\\Users\\\\Vannon\\\\Documents\\\\snippet-empire\\\\snip-war**",
+          "agent": "Das aktuelle Arbeitsverzeichnis ist:\n**C:\\Users\\Vannon\\Documents\\snippet-empire\\snip-war**",
           "commit": null
         }
       ],
-      "color": "#06b6d4",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "QA_TEST": 1,
-        "SERVER_START": 1
-      }
+      "color": "#06b6d4"
     },
     {
       "name": "read only e wird aktuell och parallel…",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "HEADLESS_VERBOT": 1,
+        "BUG": 1,
+        "REFACTOR": 1,
+        "SERVER_START": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260823_151",
@@ -1355,24 +1320,32 @@
             "SERVER_START"
           ],
           "user": "read only e wird aktuell och parallel gearbeitet prüfe das mcp aon und erkläre mir was ich da baue",
-          "agent": "Jetzt habe ich einen vollständigen Überblick. Hier ist, was du mit dem **gdscript_mcp** Addon baust:  ---  ## 🏗️ gdscript_mcp – Zusammenfassung  ### Was es ist Ein **MCP (Model Context Protocol) Serve",
+          "agent": "Jetzt habe ich einen vollständigen Überblick. Hier ist, was du mit dem **gdscript_mcp** Addon baust:\n\n---\n\n## 🏗️ gdscript_mcp – Zusammenfassung\n\n### Was es ist\nEin **MCP (Model Context Protocol) Serve",
           "commit": null
         }
       ],
-      "color": "#ec4899",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "HEADLESS_VERBOT": 1,
-        "BUG": 1,
-        "REFACTOR": 1,
-        "SERVER_START": 1,
-        "CONFIG": 1
-      }
+      "color": "#ec4899"
     },
     {
       "name": "{\"{\"title\": \"Update AGENTS",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "HEADLESS_VERBOT": 1,
+        "QA_TEST": 1,
+        "BUG": 1,
+        "DOKU": 1,
+        "REFACTOR": 1,
+        "FEATURE": 1,
+        "COST": 1,
+        "GIT": 1,
+        "ARCHITEKTUR": 1,
+        "PERFORMANCE": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260823_154",
@@ -1386,14 +1359,20 @@
             "BUG",
             "DOKU"
           ],
-          "user": "[/init] The user wants you to UPDATE the existing AGENTS.md project-instructions file for the project at: C:\\\\Users\\\\Vannon\\\\Documents\\\\snippet-empire\\\\snip-war  AGENTS.md is the instruction file coding ag",
-          "agent": "The AGENTS.md file in your repository is already up-to-date and matches the comprehensive content provided in the prompt. It contains all sections including:  - **Godot & Headless Verifikation** (with",
+          "user": "[/init] The user wants you to UPDATE the existing AGENTS.md project-instructions file for the project at: C:\\Users\\Vannon\\Documents\\snippet-empire\\snip-war\n\nAGENTS.md is the instruction file coding ag",
+          "agent": "The AGENTS.md file in your repository is already up-to-date and matches the comprehensive content provided in the prompt. It contains all sections including:\n\n- **Godot & Headless Verifikation** (with",
           "commit": null
         }
       ],
-      "color": "#f97316",
-      "platform": "hermes",
-      "cats": {
+      "color": "#f97316"
+    },
+    {
+      "name": "[Note: model was just switched from…",
+      "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
         "MCP_ADDON": 1,
         "HEADLESS_VERBOT": 1,
         "QA_TEST": 1,
@@ -1406,11 +1385,7 @@
         "ARCHITEKTUR": 1,
         "PERFORMANCE": 1,
         "CONFIG": 1
-      }
-    },
-    {
-      "name": "[Note: model was just switched from…",
-      "threads": 1,
+      },
       "threadList": [
         {
           "id": "20260823_160",
@@ -1424,31 +1399,24 @@
             "BUG",
             "DOKU"
           ],
-          "user": "[/init] The user wants you to UPDATE the existing AGENTS.md project-instructions file for the project at: C:\\\\Users\\\\Vannon\\\\Documents\\\\snippet-empire\\\\snip-war  AGENTS.md is the instruction file coding ag",
+          "user": "[/init] The user wants you to UPDATE the existing AGENTS.md project-instructions file for the project at: C:\\Users\\Vannon\\Documents\\snippet-empire\\snip-war\n\nAGENTS.md is the instruction file coding ag",
           "agent": "Now I have a comprehensive understanding of the project. Let me update the AGENTS.md with the new information while preserving the existing content.",
           "commit": null
         }
       ],
-      "color": "#10b981",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "HEADLESS_VERBOT": 1,
-        "QA_TEST": 1,
-        "BUG": 1,
-        "DOKU": 1,
-        "REFACTOR": 1,
-        "FEATURE": 1,
-        "COST": 1,
-        "GIT": 1,
-        "ARCHITEKTUR": 1,
-        "PERFORMANCE": 1,
-        "CONFIG": 1
-      }
+      "color": "#10b981"
     },
     {
       "name": "/architecture-diagram",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "ENTKOPPELUNG": 1,
+        "DOKU": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260823_161",
@@ -1460,22 +1428,29 @@
             "DOKU",
             "CONFIG"
           ],
-          "user": "[IMPORTANT: The user has invoked the \"architecture-diagram\" skill, indicating they want you to follow its instructions. The full skill content is loaded below.]  --- name: architecture-diagram descrip",
+          "user": "[IMPORTANT: The user has invoked the \"architecture-diagram\" skill, indicating they want you to follow its instructions. The full skill content is loaded below.]\n\n---\nname: architecture-diagram\ndescrip",
           "agent": "Operation interrupted.",
           "commit": null
         }
       ],
-      "color": "#3b82f6",
-      "platform": "hermes",
-      "cats": {
-        "ENTKOPPELUNG": 1,
-        "DOKU": 1,
-        "CONFIG": 1
-      }
+      "color": "#3b82f6"
     },
     {
       "name": "The user has invoked the \"codebase-inspection\" skill and wan",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "ENTKOPPELUNG": 1,
+        "QA_TEST": 1,
+        "BUG": 1,
+        "DOKU": 1,
+        "SUCHSYSTEM": 1,
+        "GIT": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260823_161",
@@ -1489,27 +1464,32 @@
             "BUG",
             "DOKU"
           ],
-          "user": "[IMPORTANT: The user has invoked the \"codebase-inspection\" skill, indicating they want you to follow its instructions. The full skill content is loaded below.]  --- name: codebase-inspection descripti",
-          "agent": "## Codebase Inspection Results  ### Overall (Including Godot Assets/Resources/Scenes) | Language | Files | Code Lines | Comment Lines | |----------|-------|------------|---------------| | **GDScript**",
+          "user": "[IMPORTANT: The user has invoked the \"codebase-inspection\" skill, indicating they want you to follow its instructions. The full skill content is loaded below.]\n\n---\nname: codebase-inspection\ndescripti",
+          "agent": "## Codebase Inspection Results\n\n### Overall (Including Godot Assets/Resources/Scenes)\n| Language | Files | Code Lines | Comment Lines |\n|----------|-------|------------|---------------|\n| **GDScript**",
           "commit": null
         }
       ],
-      "color": "#8b5cf6",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "ENTKOPPELUNG": 1,
-        "QA_TEST": 1,
-        "BUG": 1,
-        "DOKU": 1,
-        "SUCHSYSTEM": 1,
-        "GIT": 1,
-        "CONFIG": 1
-      }
+      "color": "#8b5cf6"
     },
     {
       "name": "[Note: model was just switched from… #2",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "QA_TEST": 1,
+        "BUG": 1,
+        "DOKU": 1,
+        "REFACTOR": 1,
+        "FEATURE": 1,
+        "SUCHSYSTEM": 1,
+        "GIT": 1,
+        "ARCHITEKTUR": 1,
+        "PERFORMANCE": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260823_183",
@@ -1524,29 +1504,26 @@
             "REFACTOR"
           ],
           "user": "Prüfe wie conext index und earch ktull funktioniert",
-          "agent": "Das **ConceptIndex**-System funktioniert so:  ## \\`concept_index.gd\\` — Zentrale Suchstruktur - **Scannt \\`res://scripts\\`** rekursiv nach \\`class_name\\`-Deklarationen (Datei-Mapping ist **automatisch**) - ",
+          "agent": "Das **ConceptIndex**-System funktioniert so:\n\n## `concept_index.gd` — Zentrale Suchstruktur\n- **Scannt `res://scripts`** rekursiv nach `class_name`-Deklarationen (Datei-Mapping ist **automatisch**)\n- ",
           "commit": null
         }
       ],
-      "color": "#f59e0b",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "QA_TEST": 1,
-        "BUG": 1,
-        "DOKU": 1,
-        "REFACTOR": 1,
-        "FEATURE": 1,
-        "SUCHSYSTEM": 1,
-        "GIT": 1,
-        "ARCHITEKTUR": 1,
-        "PERFORMANCE": 1,
-        "CONFIG": 1
-      }
+      "color": "#f59e0b"
     },
     {
       "name": "Nutze remote controll und den in adon…",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "GAMEPLAY": 1,
+        "BUG": 1,
+        "FEATURE": 1,
+        "SERVER_START": 1,
+        "REMOTE_CONTROL": 1
+      },
       "threadList": [
         {
           "id": "20260824_014",
@@ -1565,20 +1542,27 @@
           "commit": null
         }
       ],
-      "color": "#ef4444",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "GAMEPLAY": 1,
-        "BUG": 1,
-        "FEATURE": 1,
-        "SERVER_START": 1,
-        "REMOTE_CONTROL": 1
-      }
+      "color": "#ef4444"
     },
     {
       "name": "Prüfe MCP-Verfügbarkeit auf Port 9091",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "HEADLESS_VERBOT": 1,
+        "GAMEPLAY": 1,
+        "QA_TEST": 1,
+        "BUG": 1,
+        "DOKU": 1,
+        "FEATURE": 1,
+        "SUCHSYSTEM": 1,
+        "GIT": 1,
+        "ARCHITEKTUR": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260826_213",
@@ -1597,25 +1581,19 @@
           "commit": null
         }
       ],
-      "color": "#06b6d4",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "HEADLESS_VERBOT": 1,
-        "GAMEPLAY": 1,
-        "QA_TEST": 1,
-        "BUG": 1,
-        "DOKU": 1,
-        "FEATURE": 1,
-        "SUCHSYSTEM": 1,
-        "GIT": 1,
-        "ARCHITEKTUR": 1,
-        "CONFIG": 1
-      }
+      "color": "#06b6d4"
     },
     {
       "name": "mcp test , addons/mcp ls mcp server in hermes…",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "HEADLESS_VERBOT": 1,
+        "QA_TEST": 1
+      },
       "threadList": [
         {
           "id": "20260826_223",
@@ -1632,21 +1610,28 @@
           "commit": null
         }
       ],
-      "color": "#ec4899",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "HEADLESS_VERBOT": 1,
-        "QA_TEST": 1
-      }
+      "color": "#ec4899"
     },
     {
-      "name": "Here\\'s a thinking process",
+      "name": "Here's a thinking process",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "MCP_ADDON": 1,
+        "ENTKOPPELUNG": 1,
+        "HEADLESS_VERBOT": 1,
+        "QA_TEST": 1,
+        "DOKU": 1,
+        "SERVER_START": 1,
+        "REMOTE_CONTROL": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "20260826_225",
-          "title": "Here\\'s a thinking process",
+          "title": "Here's a thinking process",
           "platform": "hermes",
           "date": "2026-08-26 20:55",
           "cats": [
@@ -1661,22 +1646,17 @@
           "commit": null
         }
       ],
-      "color": "#f97316",
-      "platform": "hermes",
-      "cats": {
-        "MCP_ADDON": 1,
-        "ENTKOPPELUNG": 1,
-        "HEADLESS_VERBOT": 1,
-        "QA_TEST": 1,
-        "DOKU": 1,
-        "SERVER_START": 1,
-        "REMOTE_CONTROL": 1,
-        "CONFIG": 1
-      }
+      "color": "#f97316"
     },
     {
       "name": "[Note: model was just switched from… #3",
       "threads": 1,
+      "platforms": [
+        "hermes"
+      ],
+      "categories": {
+        "UNCATEGORIZED": 1
+      },
       "threadList": [
         {
           "id": "20260827_020",
@@ -1687,19 +1667,21 @@
             "UNCATEGORIZED"
           ],
           "user": "scann die repo und wie man wo die scann parse und sortier logiken erweitern und veerbssern kann suche online nachweieren qulle ndie irgendwo auf fmeinem system liegen könnten",
-          "agent": "**Überblick: Wo die Scan‑ und Sortier‑Logik im Repo zu finden ist**  | Bereich                     | Datei / Ort                                                                 | Zweck                ",
+          "agent": "**Überblick: Wo die Scan‑ und Sortier‑Logik im Repo zu finden ist**\n\n| Bereich                     | Datei / Ort                                                                 | Zweck                ",
           "commit": null
         }
       ],
-      "color": "#10b981",
-      "platform": "hermes",
-      "cats": {
-        "UNCATEGORIZED": 1
-      }
+      "color": "#10b981"
     },
     {
       "name": "npm",
       "threads": 1,
+      "platforms": [
+        "kilo_code"
+      ],
+      "categories": {
+        "BUG": 1
+      },
       "threadList": [
         {
           "id": "ses_0ddff669",
@@ -1710,19 +1692,25 @@
             "BUG"
           ],
           "user": "Kill all processe sollte as tun was e verspricht, keys Sollten auch bei Leerstellen genommen werden Routing solltet LLMS nur zur verbesserung nutzen,Runtime schützt placeholder und generiert die promt",
-          "agent": "I\\'ll explore the workspace to understand the project structure and then address these requirements.",
+          "agent": "I'll explore the workspace to understand the project structure and then address these requirements.",
           "commit": null
         }
       ],
-      "color": "#3b82f6",
-      "platform": "kilo_code",
-      "cats": {
-        "BUG": 1
-      }
+      "color": "#3b82f6"
     },
     {
       "name": "PiplineRhym",
       "threads": 1,
+      "platforms": [
+        "kilo_code"
+      ],
+      "categories": {
+        "BUG": 1,
+        "DOKU": 1,
+        "ARCHITEKTUR": 1,
+        "PERFORMANCE": 1,
+        "CONFIG": 1
+      },
       "threadList": [
         {
           "id": "ses_0c794777",
@@ -1737,19 +1725,11 @@
             "CONFIG"
           ],
           "user": "Red only",
-          "agent": "SSOT empfangen. Einrichtung des Monorepos für PipelineRhythm läuft... {   \"name\": \"@pipeline-rhythm/audio-engine\",   \"version\": \"0.1.0\",   \"description\": \"Audio engine for PipelineRhythm using Web Aud",
+          "agent": "SSOT empfangen. Einrichtung des Monorepos für PipelineRhythm läuft...\n{\n  \"name\": \"@pipeline-rhythm/audio-engine\",\n  \"version\": \"0.1.0\",\n  \"description\": \"Audio engine for PipelineRhythm using Web Aud",
           "commit": null
         }
       ],
-      "color": "#8b5cf6",
-      "platform": "kilo_code",
-      "cats": {
-        "BUG": 1,
-        "DOKU": 1,
-        "ARCHITEKTUR": 1,
-        "PERFORMANCE": 1,
-        "CONFIG": 1
-      }
+      "color": "#8b5cf6"
     }
   ],
   "timeline": [
@@ -2042,20 +2022,75 @@
           "proj": "snip-war"
         }
       ]
+    },
+    {
+      "date": "2026-08-19",
+      "commits": [
+        {
+          "hash": "6197fa7",
+          "msg": "Planetennetz-UI in Teilszenen zerlegen, Satelliten-Asset aus",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "9d46e8e",
+          "msg": "Layer-1-Loop: forschungsgegate Werft, Scout-Erkundung, Worke",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "579e2b4",
+          "msg": "Scout-/Tech-Vertical-Slice, Ereignis-Feed und gemeinsame Lau",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "b57a7a0",
+          "msg": "Ownership und Konflikt-Transit als spielbaren Vertical Slice",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "3a82f62",
+          "msg": "Ownership und Konflikt-Transit als spielbaren Vertical Slice",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "cb00c3c",
+          "msg": "Szenario-Routen und Waypoint-Kataloge datengetrieben integri",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "a790ba7",
+          "msg": "Szenario- und Kartenkonfigurationen für den Overworld-Start ",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "35c278f",
+          "msg": "Hintergrund-Draw-Calls für hohe Auflösungen bündeln.",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "ab5cb2f",
+          "msg": "Transitwege über Mond- und Kometen-Netzwerk routen.",
+          "proj": "snip-war"
+        },
+        {
+          "hash": "9d9d8b0",
+          "msg": "Overworld-Inhalte und Präsentation skalierbar machen.",
+          "proj": "snip-war"
+        }
+      ]
     }
   ],
   "noAgent": [
     {
-      "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+      "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
       "platform": "claude_code",
       "date": "2026-07-07 12:34",
-      "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter"
+      "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter"
     },
     {
-      "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+      "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
       "platform": "claude_code",
       "date": "2026-07-07 12:40",
-      "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter"
+      "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter"
     },
     {
       "title": "update subagents",
@@ -2112,16 +2147,16 @@
       "user": "[Pasted text #1 +764 lines]"
     },
     {
-      "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+      "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
       "platform": "claude_code",
       "date": "2026-07-07 14:25",
-      "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter"
+      "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter"
     },
     {
-      "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+      "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
       "platform": "claude_code",
       "date": "2026-07-07 15:04",
-      "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter"
+      "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter"
     },
     {
       "title": "nutzte alle agent daten, erstelle 1x doku workflow,1xdebuggi",
@@ -2136,10 +2171,10 @@
       "user": "nutzte alle agent daten, erstelle 1x doku workflow,1xdebugging workflow,1x Goal sprint workflow die "
     },
     {
-      "title": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter",
+      "title": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter",
       "platform": "claude_code",
       "date": "2026-07-07 15:24",
-      "user": "/cd C:\\\\Users\\\\Vannon\\\\Desktop\\\\RhytmusIsaPatter"
+      "user": "/cd C:\\Users\\Vannon\\Desktop\\RhytmusIsaPatter"
     },
     {
       "title": "Unset the ANTHROPIC_AUTH_TOKEN environment variable.",
