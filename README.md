@@ -1,8 +1,18 @@
-# ◈ PRISM
+<p align="center">
+  <img src="assets/banner.svg" alt="PRISM — Platform Recognition & Input Session Miner" width="100%">
+</p>
 
-**P**latform **R**ecognition & **I**nput **S**ession **M**iner
+<p align="center">
+  <strong>P</strong>latform <strong>R</strong>ecognition &amp; <strong>I</strong>nput <strong>S</strong>ession <strong>M</strong>iner<br>
+  <em>Die hastigen Eingaben von 15 AI-Coding-Agenten in ein kohärentes Dashboard verwandelt.</em>
+</p>
 
-> *Ein Tool, das seine eigene Existenz bereut — aber trotzdem funktioniert.*
+<p align="center">
+  <img src="https://img.shields.io/badge/version-6.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/python-3.8+-green" alt="Python">
+  <img src="https://img.shields.io/badge/license-MIT-purple" alt="License">
+  <img src="https://img.shields.io/badge/platforms-12+-orange" alt="Platforms">
+</p>
 
 ---
 
@@ -16,37 +26,32 @@ Die Antwort ist: Es waere ein chaosfarbenes Pie-Chart mit zu vielen Datenpunkten
 
 ---
 
-## Das Dashboard
+## Dashboard-Vorschau
 
-PRISM generiert ein interaktives Canvas-Dashboard. So sieht es aus:
+<p align="center">
+  <img src="docs/screenshots/canvas-preview.png" alt="Canvas Dashboard" width="100%">
+  <br>
+  <em>Interaktives Canvas-Dashboard mit Pie-Chart-Bubbles und Drill-Down Navigation</em>
+</p>
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  ◈ PRISM          341    207    6    10    60.7%        │
-│                  Threads Beantwortet Offen Interrupts   │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│    ╭─────╮         Pie-Charts als Bubbles              │
-│    │█████│ ← snip-war (109 Threads)                    │
-│    │█░░██│   Gruen = committed                          │
-│    ╰─────╯   Lila = pending                            │
-│                                                         │
-│  ◇ PR  MERGED    #4 "Preflight Hardening"              │
-│  ◇ PR  MERGED    #3 "MCP-Server Performance"           │
-│  ◇ COMMIT  59ed222 feat: add character dialogue        │
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│  [Uebersicht] [Projekte] [Zeitstrahl] [Integritaet]    │
-└─────────────────────────────────────────────────────────┘
-```
+PRISM generiert interaktive Dashboards in verschiedenen Ansichten:
 
-Features:
-- **Pie-Chart-Bubbles** pro Projekt (Kategorie-Verteilung)
-- **Drill-Down** von Projekt → Threads → Messages
-- **COMMIT/PR/BRANCH-Badges** fuer jeden Thread
-- **Git-Integration** mit automatischem Matching
-- **12 dedizierte Plattform-Reader** (kein Generic-Fallback)
-- **Fuzzy-Deduplizierung** via SimHash + Jaccard
+| Dashboard | Beschreibung | Vorschau |
+|-----------|-------------|----------|
+| **Canvas** | Pie-Charts als Bubbles, Drill-Down, Git-Integration | [Öffnen](docs/screenshots/canvas-preview.html) |
+| **Threads** | Kategorisierte Thread-Ansicht mit Filtern | [Öffnen](docs/screenshots/threads-preview.html) |
+| **User Inputs** | Detaillierte User-Input-Analyse mit Charts | [Öffnen](docs/screenshots/user-inputs-preview.html) |
+
+### Features
+
+- 🎯 **Pie-Chart-Bubbles** pro Projekt (Kategorie-Verteilung)
+- 🔍 **Drill-Down** von Projekt → Threads → Messages
+- 🏷️ **COMMIT/PR/BRANCH-Badges** für jeden Thread
+- 🔗 **Git-Integration** mit automatischem Matching
+- 📊 **12 dedizierte Plattform-Reader** (kein Generic-Fallback)
+- 🧹 **Fuzzy-Deduplizierung** via SimHash + Jaccard
+- 📈 **Memory-Volumen-Analyse** (User vs. Assistant vs. Tool)
+- ⏱️ **Commit-Timeline** mit automatischer Korrelation
 
 ---
 
@@ -74,19 +79,29 @@ PRISM erkennt automatisch, welche Plattformen installiert sind:
 ## Schnellstart
 
 ```bash
+# Klonen und installieren
 git clone https://github.com/vannon091118/PRISM.git
 cd PRISM
-pip install jinja2  # Optional, fuer volle Visualisierung
+pip install jinja2  # Optional, für volle Visualisierung
 
-# Was ist installiert?
+# Welche Plattformen sind installiert?
 python -m parse_user_inputs --discover
 
-# Dashboard generieren
+# Canvas-Dashboard generieren
 python -m parse_user_inputs --canvas --html dashboard.html
 
-# Thread-Ansicht
+# Thread-Ansicht generieren
 python -m parse_user_inputs --threads --html threads.html
+
+# User-Inputs Dashboard
+python -m parse_user_inputs --html user_inputs.html
 ```
+
+<p align="center">
+  <img src="docs/screenshots/threads-preview.png" alt="Threads Dashboard" width="100%">
+  <br>
+  <em>Thread-Ansicht mit Kategorien, Plattformen und Filtern</em>
+</p>
 
 ---
 
@@ -114,6 +129,12 @@ parse_user_inputs/
 ├── templates/             # Canvas-Dashboard (standalone)
 └── tests/                 # 52 Tests
 ```
+
+<p align="center">
+  <img src="docs/screenshots/user-inputs-preview.png" alt="User Inputs Dashboard" width="100%">
+  <br>
+  <em>User-Inputs Dashboard mit Memory-Analyse, Charts und Reasoning-Snippets</em>
+</p>
 
 ---
 
